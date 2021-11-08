@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info: 
+  title: CryptoMetrics API
+  version: 0.0.1
+  description: An app to view all the metrics of your cryptowallet
+paths:
+  /api/user:
+    $ref: ./user.yaml#/collection
+  /api/user/{id}:
+    $ref: ./user.yaml#/instance
+  /api/user/{id}/wallet:
+    $ref: ./user.yaml#/wallet
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+
+security:
+  - BasicAuth: []

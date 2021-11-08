@@ -1,0 +1,39 @@
+'404':
+  description: Not Found
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          message: 
+            type: string
+          code: 
+            type: number
+        default: {message: Object not found in database, code: 404}
+
+'401':
+  description: Unauthorized
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          message: 
+            type: string
+          code: 
+            type: number
+        default: {message: Not authorized for the request, code: 401}
+
+'500':
+  description: Server Error
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          message: 
+            type: string
+          code: 
+            type: number
+        default: {message: Server encountered a problem, code: 500}
+

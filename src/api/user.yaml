@@ -1,0 +1,159 @@
+collection:
+  post:
+    summary: Create a new user
+    operationId: createUser
+    requestBody:
+      description: Create user and save it in database with password
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+    responses:
+      '200':
+        description: User succesfully created
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+instance:
+  get:
+    summary: Get user Information
+    operationId: findUser
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: User found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+  
+  patch:
+    summary: Update user information
+    operationId: updateUser
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: Update user and save it in database with password
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+              apiKey:
+                type: string
+    responses:
+      '200':
+        description: User updated
+        content:
+          application/json:
+            schema:
+              type: string
+              
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+  
+  delete:
+    summary: Deactivate User
+    operationId: deleteUser
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: User desactivated
+        content:
+          application/json:
+            schema:
+              type: string
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+wallet:
+  get:
+    summary: Get User wallet Information
+    operationId: Get Wallet
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Wallet Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+    
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Wallet:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: date
+          inventory:
+            type: array
+            items:
+              type: object
+              properties:
+                coin:
+                  type: string
+                ammount:
+                  type: number
+                price:
+                  type: number
+                averageCost:
+                  type: number
+          value:
+            type: number
+        

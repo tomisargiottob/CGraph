@@ -1,0 +1,5 @@
+app:
+  port: 3000
+
+mongodb:
+  uri: 'mongodb://cryptometric:cryptometric@localhost:27017/cryptometrics'
