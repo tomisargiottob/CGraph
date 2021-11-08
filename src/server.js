@@ -2,7 +2,7 @@ const express = require('express');
 const config = require('config');
 const cors = require('cors');
 const { initialize } = require('express-openapi');
-const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
+const swaggerUi = require('swagger-ui-express');
 const openapiParser = require('swagger-parser');
 const swaggerStats = require('swagger-stats');
 const database = require('./components/database');
@@ -29,8 +29,8 @@ async function main (){
     res.send('Hola Mundo')
   })
 
-  app.use(swaggerStats.getMiddleware({swaggerSpec: deps[0]}));
-  app.use(express.static(pathToSwaggerUi))
+  app.use(swaggerStats.getMiddleware({swaggerSpec: deps[0]})); //metricas en /swagger-stats/stats
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(deps[0]));
 
   const PORT = config.app.port || 8080;
   
