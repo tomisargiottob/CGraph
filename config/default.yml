@@ -7,3 +7,6 @@ mongodb:
 
 auth:
   secret: adkgfn274ot41%$&/%3215
+
+logger:
+  level: trace

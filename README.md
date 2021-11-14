@@ -1,10 +1,10 @@
-# Plantilla de express
+# CryptoMetrics
 ## Descripción
 
-Esta plantilla de express incluye la iniciacion de un servidor con las configuraciones de eslint y el editor para trabajar de acuerdo con mis estandares
+proyecto de seguimiento de cartera de inversion de los principales exchanges de cryptomonedas.
 
 ## Requisitos
-- Node
+- Node 14.17
 - npm
 
 ## Instalación
