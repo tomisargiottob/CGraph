@@ -19,6 +19,9 @@ collection:
               password:
                 type: string
                 minLength: 8
+              active:
+                type: boolean
+                default: true
     responses:
       '200':
         description: User succesfully created
@@ -65,11 +68,19 @@ instance:
         application/json:
           schema:
             type: object
+            additionalProperties: false
             properties:
               password:
                 type: string
               apiKey:
                 type: string
+              schedule:
+                type: object
+                properties:
+                  time:
+                    type: string
+                  frecuency:
+                    type: number
     responses:
       '200':
         description: User updated
