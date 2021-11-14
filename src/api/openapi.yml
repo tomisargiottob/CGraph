@@ -4,11 +4,15 @@ info:
   version: 0.0.1
   description: An app to view all the metrics of your cryptowallet
 paths:
-  /api/user:
+  /user:
     $ref: ./user.yaml#/collection
-  /api/user/{id}:
+  /login:
+    $ref: ./user.yaml#/login
+  /user/{id}:
     $ref: ./user.yaml#/instance
   /api/user/{id}/wallet:
+    $ref: ./user.yaml#/wallet
+  /api/user/{id}/apiKey:
     $ref: ./user.yaml#/wallet
 
 components:

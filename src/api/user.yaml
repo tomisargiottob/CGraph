@@ -1,7 +1,7 @@
 collection:
   post:
     summary: Create a new user
-    operationId: createUser
+    operationId: registerUser
     requestBody:
       description: Create user and save it in database with password
       required: true
@@ -15,8 +15,10 @@ collection:
             properties:
               username:
                 type: string
+                minLength: 8
               password:
                 type: string
+                minLength: 8
     responses:
       '200':
         description: User succesfully created
@@ -123,8 +125,56 @@ wallet:
         $ref: './errors.yaml#/401'
       '500':
         $ref: './errors.yaml#/500'
-    
 
+apiKey:
+  patch:
+    summary: Add apiKey to user
+    operationId: patchApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: ApiKey updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+    
+login:
+  post:
+    summary: Login User
+    operationId: loginUser
+    requestBody:
+      description: Log in a user with credentials
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+    responses:
+      '200':
+        description: User logged in
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+ 
 components:
   schemas:
     User:
