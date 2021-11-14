@@ -1,14 +1,18 @@
-const log4js = require('log4js');
+const config = require('config');
 
-log4js.configure({
-  appenders: {
-    console: { type: 'console' },
+const formatters = {
+  bindings() {
+    return {};
   },
-  categories: {
-    default: { appenders: ['console'], level: 'debug' },
+  level(label) {
+    return { level: label };
   },
+};
+
+const logger = require('pino')({
+  timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
+  formatters,
+  level: config.logger.level,
 });
-
-const logger = log4js.getLogger();
 
 module.exports = logger;
