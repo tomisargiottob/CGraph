@@ -20,11 +20,14 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-openapi": "^9.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^6.3.0",
     "mongodb": "^4.1.4",
     "prom-client": "^14.0.1",
     "swagger-parser": "^10.0.3",
     "swagger-stats": "^0.99.2",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
