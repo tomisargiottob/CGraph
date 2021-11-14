@@ -7,6 +7,17 @@ class Users {
     this.logger = logger;
   }
 
+  async getAllUsers() {
+    try {
+      const usersFetched = await this.collection.find();
+      const users = usersFetched.map((user) => new UserModel(user));
+      return users;
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
+  }
+
   async getUser({ username }) {
     try {
       const user = await this.collection.findOne({ username });

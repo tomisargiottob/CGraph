@@ -33,7 +33,7 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
         if (!schedule) {
           schedule = user.schedule;
         }
-        const updatedUser = await db.user.updateUser(
+        await db.user.updateUser(
           {
             id,
             apiKey,
@@ -41,18 +41,29 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
             schedule,
           },
         );
-        return res.status(200).json(updatedUser.toJson());
+        return res.status(200).json({ message: 'User information updated succesfully' });
       } catch {
         return res.status(500).json({ message: 'Server did not respond' });
       }
     },
     delete: async function registerUser(req, res) {
-      logger.info('llega');
-      const { username, password } = req.body;
-      logger.info(username, password);
-      const user = db.user.getUser(username);
-      logger.info(user);
-      res.status(200).json(user);
+      const { id } = req.params;
+      const { active } = req.body;
+      try {
+        const user = await db.user.getUserById({ id });
+        if (!user) {
+          return res.status(404).json({ message: 'User does not exist' });
+        }
+        await db.user.updateUser(
+          {
+            id,
+            active,
+          },
+        );
+        return res.status(200).json({ message: 'User information updated succesfully' });
+      } catch {
+        return res.status(500).json({ message: 'Server did not respond' });
+      }
     },
   };
 };
