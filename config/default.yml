@@ -3,3 +3,7 @@ app:
 
 mongodb:
   uri: 'mongodb://cryptometric:cryptometric@localhost:27017/cryptometrics'
+  dbName: cryptometrics
+
+auth:
+  secret: adkgfn274ot41%$&/%3215
