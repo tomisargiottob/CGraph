@@ -55,21 +55,49 @@ class Users {
     }
   }
 
-  async updateUser(
-    {
-      id,
+  async updateUser(id, updateData) {
+    let {
       password,
       apiKey,
       schedule,
-    },
-  ) {
+      wallet,
+      active,
+    } = updateData;
     try {
-      const user = await this.collection.findOneAndUpdate(
+      const user = await this.getUserById({ id });
+      if (!user) {
+        return new Error({ message: 'User does not exist' });
+      }
+      if (!apiKey) {
+        apiKey = user.apiKey;
+      }
+      if (!password) {
+        password = user.password;
+      }
+      if (!schedule) {
+        schedule = user.schedule;
+      }
+      if (!wallet) {
+        wallet = user.wallet;
+      }
+      if (!active) {
+        active = user.active;
+      }
+      const userUpdated = await this.collection.findOneAndUpdate(
         { _id: id },
-        { $set: { apiKey, password, schedule } },
-        { returnNewDocument: true },
+        {
+          $set:
+            {
+              apiKey,
+              password,
+              schedule,
+              wallet,
+              active,
+            },
+        },
+        { returnDocument: 'after' },
       );
-      return new UserModel(user.value);
+      return new UserModel(userUpdated.value);
     } catch (err) {
       this.logger.error(err);
       return '';

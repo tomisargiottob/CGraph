@@ -33,8 +33,14 @@ class Scheduler {
             scheduleTime,
             async () => {
               logger.warn('Ejecutar la consulta a binance segun esquema de usuario');
-              const updatedUser = await this.db.user.updateUser({
-                id: user.id,
+              if (user.wallet) {
+                user.wallet.push(scheduleTime);
+              } else {
+                // eslint-disable-next-line no-param-reassign
+                user.wallet = [];
+              }
+              const updatedUser = await this.db.user.updateUser(user.id, {
+                wallet: user.wallet,
                 schedule: {
                   time: user.schedule.time,
                   frecuency: user.schedule.frecuency,
@@ -49,8 +55,14 @@ class Scheduler {
           const defaultTime = Date.now() + 20000;
           const job = schedule.scheduleJob(defaultTime, async () => {
             logger.warn('Ejecutar la consulta a binance en tiempo por defecto por que se paso su tiempo');
-            const updatedUser = await this.db.user.updateUser({
-              id: user.id,
+            if (user.wallet) {
+              user.wallet.push(defaultTime);
+            } else {
+              // eslint-disable-next-line no-param-reassign
+              user.wallet = [];
+            }
+            const updatedUser = await this.db.user.updateUser(user.id, {
+              wallet: user.wallet,
               schedule: {
                 time: user.schedule.time,
                 frecuency: user.schedule?.frecuency,
@@ -64,8 +76,14 @@ class Scheduler {
       } else if (planned > today) {
         const job = schedule.scheduleJob(planned, async () => {
           logger.warn('Ejecutar la consulta a binance en tiempo planeado');
-          const updatedUser = await this.db.user.updateUser({
-            id: user.id,
+          if (user.wallet) {
+            user.wallet.push(planned.getTime());
+          } else {
+            // eslint-disable-next-line no-param-reassign
+            user.wallet = [];
+          }
+          const updatedUser = await this.db.user.updateUser(user.id, {
+            wallet: user.wallet,
             schedule: {
               time: user.schedule.time,
               frecuency: user.schedule.frecuency,
@@ -79,8 +97,14 @@ class Scheduler {
         const defaultTime = Date.now() + 20000;
         const job = schedule.scheduleJob(new Date(defaultTime), async () => {
           logger.warn('Ejecutar la consulta a binance en tiempo por defecto');
-          const updatedUser = await this.db.user.updateUser({
-            id: user.id,
+          if (user.wallet) {
+            user.wallet.push(defaultTime);
+          } else {
+            // eslint-disable-next-line no-param-reassign
+            user.wallet = [];
+          }
+          const updatedUser = await this.db.user.updateUser(user.id, {
+            wallet: user.wallet,
             schedule: {
               time: user.schedule.time,
               frecuency: user.schedule?.frecuency,
@@ -91,47 +115,30 @@ class Scheduler {
         });
         this.schedules.push(job);
       }
-      this.logger.info('Se ha agregado correctamente la tarea');
     } else {
-      logger.info(`El usuario ${user.username} no tiene registrado schedule se le agrega por defecto `);
-      const instantDate = new Date(Date.now() + 10000);
+      const instantDate = Date.now() + 10000;
       const job = schedule.scheduleJob(instantDate, async () => {
-        logger.warn('Ejecutar la consulta a binance');
-        const updatedUser = await this.db.user.updateUser({
-          id: user.id,
-          schedule: {
-            time: `${today.getHours()}:${today.getMinutes()}`,
-            frecuency: user.schedule?.frecuency || 1,
-            last: instantDate,
-          },
-        });
+        logger.warn(`El usuario ${user.username} no tiene registrado schedule se ha ejecutado en tiempo por defecto`);
+        if (user.wallet) {
+          user.wallet.push(instantDate);
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          user.wallet = [];
+        }
+        const updatedUser = await this.db.user.updateUser(user.id,
+          {
+            wallet: user.wallet,
+            schedule: {
+              time: `${today.getHours()}:${today.getMinutes()}`,
+              frecuency: user.schedule?.frecuency || 1,
+              last: instantDate,
+            },
+          });
         this.program(updatedUser);
       });
       this.schedules.push(job);
-      logger.info('Se ha agregado correctamente la tarea');
     }
-  }
-
-  reprogram(user) {
-    const logger = this.logger.child({ function: 'reprogram' });
-    // const nextUpdate = user.schedule.last + user.schedule.frecuency * 30 * 1000;
-    const nextUpdate = Date.now() + 20000;
-    const job = schedule.scheduleJob(
-      nextUpdate,
-      async () => {
-        logger.warn({ user: user.username }, 'Ejecutar la consulta a binance');
-        const updatedUser = await this.db.user.updateUser({
-          id: user.id,
-          schedule: {
-            time: user.schedule.time,
-            frecuency: user.schedule?.frecuency || 1,
-            last: nextUpdate,
-          },
-        });
-        this.reprogram(updatedUser);
-      },
-    );
-    this.schedules.push(job);
+    logger.info('Se ha agregado correctamente la tarea');
   }
 }
 

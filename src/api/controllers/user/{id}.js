@@ -14,33 +14,22 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
     },
     patch: async function registerUser(req, res) {
       const { id } = req.params;
-      let { apiKey, password, schedule } = req.body;
+      const { apiKey, password, schedule } = req.body;
+      let encryptedApiKey;
+      let encryptedPassword;
       try {
-        const user = await db.user.getUserById({ id });
-        if (!user) {
-          return res.status(404).json({ message: 'User does not exist' });
+        if (apiKey) {
+          encryptedApiKey = await bcrypt.hash(apiKey, 10);
         }
-        if (!apiKey) {
-          apiKey = user.apiKey;
-        } else {
-          apiKey = await bcrypt.hash(apiKey, 10);
+        if (password) {
+          encryptedPassword = await bcrypt.hash(password, 10);
         }
-        if (!password) {
-          password = user.password;
-        } else {
-          password = await bcrypt.hash(password, 10);
-        }
-        if (!schedule) {
-          schedule = user.schedule;
-        }
-        await db.user.updateUser(
+        await db.user.updateUser(id,
           {
-            id,
-            apiKey,
-            password,
+            apiKey: encryptedApiKey,
+            password: encryptedPassword,
             schedule,
-          },
-        );
+          });
         return res.status(200).json({ message: 'User information updated succesfully' });
       } catch {
         return res.status(500).json({ message: 'Server did not respond' });
@@ -55,8 +44,8 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
           return res.status(404).json({ message: 'User does not exist' });
         }
         await db.user.updateUser(
+          id,
           {
-            id,
             active,
           },
         );
