@@ -22,6 +22,9 @@ collection:
               active:
                 type: boolean
                 default: true
+              wallet:
+                type: array
+                default: []
     responses:
       '200':
         description: User succesfully created

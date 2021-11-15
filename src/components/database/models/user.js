@@ -6,6 +6,7 @@ class User {
     this.password = data.password;
     this.apiKey = data.apiKey;
     this.schedule = data.schedule;
+    this.wallet = data.wallet;
   }
 
   getPassword() {
@@ -16,15 +17,12 @@ class User {
     return this.wallet;
   }
 
-  getApiKey() {
-    return this.apiKey;
-  }
-
   toJson() {
     return {
       id: this.id,
       username: this.username,
       token: this.token,
+      schedule: this.schedule,
     };
   }
 }
