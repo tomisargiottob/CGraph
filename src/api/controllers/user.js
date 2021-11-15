@@ -1,4 +1,4 @@
-module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid) {
+module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid, scheduler) {
   return {
     post: async function registerUser(req, res) {
       const { username, password } = req.body;
@@ -13,6 +13,7 @@ module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid) 
           username,
           password: encryptedPassword,
         });
+        scheduler.program(user);
         const token = jwt.sign(
           // eslint-disable-next-line no-underscore-dangle
           { user_id: user.id },

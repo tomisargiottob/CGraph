@@ -28,14 +28,13 @@ async function main() {
     openapiParser.dereference('src/api/openapi.yml'),
     database.connect(),
   ]);
-  const scheduler = new Scheduler(database, logger);
-  await scheduler.init();
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(verifyToken);
-
+  const scheduler = new Scheduler(database, logger);
+  await scheduler.init();
   // app.use(enteringRequest); // DEVELOP
   initialize({
     app,
@@ -47,6 +46,7 @@ async function main() {
       config,
       bcrypt,
       uuid,
+      scheduler,
     },
     promiseMode: true,
     errorMiddleware: errorHandler,
