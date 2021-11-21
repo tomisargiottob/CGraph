@@ -1,0 +1,68 @@
+collection:
+  get:
+    summary: Get User wallet Information
+    operationId: GetUserWallet
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: where
+        in: query
+        schema:
+          type: object  
+          properties:
+            date:
+              additionalProperties: false
+              type: object
+              properties:
+                gt:
+                  type: integer
+                lt:
+                  type: integer
+
+    responses:
+      '200':
+        description: Wallet Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+components:
+  schemas:
+    Wallet:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          date:
+            type: integer
+          account:
+            type: string
+            enum: 
+              - binance
+              - kucoin
+              - coinbase 
+          inventory:
+            type: array
+            items:
+              type: object
+              properties:
+                coin:
+                  type: string
+                ammount:
+                  type: number
+                price:
+                  type: number
+                value:
+                  type: number
+          value:
+            type: number
