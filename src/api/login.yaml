@@ -1,0 +1,30 @@
+login:
+  post:
+    summary: Login User
+    operationId: loginUser
+    requestBody:
+      description: Log in a user with credentials
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+    responses:
+      '200':
+        description: User logged in 
+        content:
+          application/json:
+            schema:
+              $ref: './user.yaml#/components/schemas/User'
+      '404':
+        $ref: './errors.yaml#/404'
+      '500':
+        $ref: './errors.yaml#/500'
