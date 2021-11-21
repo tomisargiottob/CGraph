@@ -11,7 +11,9 @@ const { v4: uuid } = require('uuid');
 const Scheduler = require('./components/scheduler/index');
 const logger = require('./components/logger/logger');
 const database = require('./components/database/index');
-const { verifyToken } = require('./middlewares/authentication.middleware');
+// const { verifyToken } = require('./middlewares/authentication.middleware');
+const BinanceClient = require('./components/connectors/binance/index');
+// const Wallet = require('./components/database/collections/wallet');
 
 function errorHandler(err, req, res, next) {
   if (err.status === 400) {
@@ -32,8 +34,9 @@ async function main() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
-  app.use(verifyToken);
+  // app.use(verifyToken);
   const scheduler = new Scheduler(database, logger);
+  const binance = new BinanceClient(logger);
   await scheduler.init();
   // app.use(enteringRequest); // DEVELOP
   initialize({
@@ -47,6 +50,7 @@ async function main() {
       bcrypt,
       uuid,
       scheduler,
+      binance,
     },
     promiseMode: true,
     errorMiddleware: errorHandler,
