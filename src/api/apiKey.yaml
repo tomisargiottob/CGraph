@@ -1,0 +1,113 @@
+collection:
+  post:
+    summary: Add User apiKey Information
+    operationId: updateWalletApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: ApiKey information
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - account
+              - apiKey
+              - apiSecret
+            properties:
+              account:
+                type: string
+                enum:
+                  - binance
+                  - kucoin
+                  - coinbase 
+              apiKey:
+                type: string
+                minLength: 10
+              apiSecret:
+                type: string 
+                minLength: 10
+    responses:
+      '200':
+        description: Wallet Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apiKey'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+  get:
+    summary: Get all User apiKeys
+    operationId: updateWalletApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: User apiKeys Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apiKey'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+instance:
+  delete:
+    summary: Remove apiKey from User Information
+    operationId: removeWalletApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: apiKey
+        in: path
+        required: true
+        schema:
+          type: string
+              
+    responses:
+      '200':
+        description: Wallet Found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apiKey'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+components: 
+  schemas:
+    apiKey:
+      type: array
+      items:  
+        type: object
+        properties:
+          id: 
+            type: string
+          account:
+            type: string
+            enum:
+              - binance
+              - kucoin
+              - coinbase 
+          # apiKey:
+          #   type: string
+          # apiSecret:
+          #   type: string   
