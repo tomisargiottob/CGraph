@@ -1,18 +1,22 @@
 const schedule = require('node-schedule');
 
 class Scheduler {
-  constructor(db, logger) {
+  constructor(db, logger, walletManager) {
     this.db = db;
     this.logger = logger.child({ module: 'Scheduler' });
     this.schedules = [];
+    this.walletManager = walletManager;
   }
 
   async init() {
-    const users = await this.db.user.getAllUsers();
+    const where = { active: true };
+    const users = await this.db.user.getAllUsers({ where });
     const logger = this.logger.child({ function: 'init' });
     logger.info('Scheduling requests for all users');
     users.forEach((user) => {
-      this.program(user);
+      if (user.apiKey?.length > 0) {
+        this.program(user);
+      }
     });
   }
 
@@ -34,19 +38,19 @@ class Scheduler {
             async () => {
               logger.warn('Ejecutar la consulta a binance segun esquema de usuario');
               if (user.wallet) {
-                user.wallet.push(scheduleTime);
+                // user.wallet.push(scheduleTime);
+                console.log('agrego registro a la wallet');
               } else {
                 // eslint-disable-next-line no-param-reassign
-                user.wallet = [];
+                console.log('creo el primer registro de la wallet');
               }
-              const updatedUser = await this.db.user.updateUser(user.id, {
-                wallet: user.wallet,
-                schedule: {
+              const updatedUser = await user.updateSchedule(
+                {
                   time: user.schedule.time,
                   frecuency: user.schedule.frecuency,
                   last: scheduleTime,
                 },
-              });
+              );
               this.program(updatedUser);
             },
           );
@@ -56,18 +60,16 @@ class Scheduler {
           const job = schedule.scheduleJob(defaultTime, async () => {
             logger.warn('Ejecutar la consulta a binance en tiempo por defecto por que se paso su tiempo');
             if (user.wallet) {
-              user.wallet.push(defaultTime);
+              console.log('agrego registro a la wallet');
             } else {
               // eslint-disable-next-line no-param-reassign
-              user.wallet = [];
+              // user.wallet = [];
+              console.log('creo el primer registro de la wallet');
             }
-            const updatedUser = await this.db.user.updateUser(user.id, {
-              wallet: user.wallet,
-              schedule: {
-                time: user.schedule.time,
-                frecuency: user.schedule?.frecuency,
-                last: defaultTime,
-              },
+            const updatedUser = await user.updateSchedule({
+              time: user.schedule.time,
+              frecuency: user.schedule.frecuency,
+              last: defaultTime,
             });
             this.program(updatedUser);
           });
@@ -77,18 +79,16 @@ class Scheduler {
         const job = schedule.scheduleJob(planned, async () => {
           logger.warn('Ejecutar la consulta a binance en tiempo planeado');
           if (user.wallet) {
-            user.wallet.push(planned.getTime());
+            console.log('agrego registro a la wallet');
           } else {
             // eslint-disable-next-line no-param-reassign
-            user.wallet = [];
+            // user.wallet = [];
+            console.log('creo el primer registro de la wallet');
           }
-          const updatedUser = await this.db.user.updateUser(user.id, {
-            wallet: user.wallet,
-            schedule: {
-              time: user.schedule.time,
-              frecuency: user.schedule.frecuency,
-              last: planned.getTime(),
-            },
+          const updatedUser = await user.updateSchedule({
+            time: user.schedule.time,
+            frecuency: user.schedule.frecuency,
+            last: planned.getTime(),
           });
           this.program(updatedUser);
         });
@@ -98,18 +98,16 @@ class Scheduler {
         const job = schedule.scheduleJob(new Date(defaultTime), async () => {
           logger.warn('Ejecutar la consulta a binance en tiempo por defecto');
           if (user.wallet) {
-            user.wallet.push(defaultTime);
+            console.log('agrego registro a la wallet');
           } else {
             // eslint-disable-next-line no-param-reassign
-            user.wallet = [];
+            // user.wallet = [];
+            console.log('creo el primer registro de la wallet');
           }
-          const updatedUser = await this.db.user.updateUser(user.id, {
-            wallet: user.wallet,
-            schedule: {
-              time: user.schedule.time,
-              frecuency: user.schedule?.frecuency,
-              last: defaultTime,
-            },
+          const updatedUser = await user.updateSchedule({
+            time: user.schedule.time,
+            frecuency: user.schedule.frecuency,
+            last: defaultTime,
           });
           this.program(updatedUser);
         });
@@ -120,20 +118,19 @@ class Scheduler {
       const job = schedule.scheduleJob(instantDate, async () => {
         logger.warn(`El usuario ${user.username} no tiene registrado schedule se ha ejecutado en tiempo por defecto`);
         if (user.wallet) {
-          user.wallet.push(instantDate);
+          console.log('agrego registro a la wallet');
         } else {
           // eslint-disable-next-line no-param-reassign
-          user.wallet = [];
+          // user.wallet = [];
+          console.log('creo el primer registro de la wallet');
+          const wallet = [Date.now()];
+          this.db.wallet.addUserRegister(user.id, wallet);
         }
-        const updatedUser = await this.db.user.updateUser(user.id,
-          {
-            wallet: user.wallet,
-            schedule: {
-              time: `${today.getHours()}:${today.getMinutes()}`,
-              frecuency: user.schedule?.frecuency || 1,
-              last: instantDate,
-            },
-          });
+        const updatedUser = await user.updateSchedule({
+          time: `${today.getHours()}:${today.getMinutes()}`,
+          frecuency: user.schedule?.frecuency || 1,
+          last: instantDate,
+        });
         this.program(updatedUser);
       });
       this.schedules.push(job);
