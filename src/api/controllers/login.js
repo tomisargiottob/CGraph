@@ -3,7 +3,7 @@ module.exports = function loginController(db, logger, bcrypt, config, jwt) {
     post: async function loginUser(req, res) {
       try {
         const { username, password } = req.body;
-        const user = await db.user.getUser({ username });
+        const user = await db.user.getUser(username);
         if (user) {
           const passwordControl = await bcrypt.compare(password, user.getPassword());
           if (passwordControl) {

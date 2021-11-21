@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 
 function verifyToken(req, res, next) {
-  if (req.url !== '/login' && (req.url !== '/user' && req.method !== 'POST')) {
+  if (req.url !== '/login' && (req.url !== '/user' && req.method !== 'POST') && req.url !== '/api-doc/') {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
 
     if (!token) {

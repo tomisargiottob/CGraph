@@ -1,9 +1,9 @@
-module.exports = function userIdCollection(db, logger, bcrypt) {
+module.exports = function userIdController(db, logger, bcrypt) {
   return {
     get: async function registerUser(req, res) {
       const { id } = req.params;
       try {
-        const user = await db.user.getUserById({ id });
+        const user = await db.user.getUserById(id);
         if (!user) {
           return res.status(404).json({ message: 'User does not exist' });
         }
@@ -14,19 +14,14 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
     },
     patch: async function registerUser(req, res) {
       const { id } = req.params;
-      const { apiKey, password, schedule } = req.body;
-      let encryptedApiKey;
+      const { password, schedule } = req.body;
       let encryptedPassword;
       try {
-        if (apiKey) {
-          encryptedApiKey = await bcrypt.hash(apiKey, 10);
-        }
         if (password) {
           encryptedPassword = await bcrypt.hash(password, 10);
         }
         await db.user.updateUser(id,
           {
-            apiKey: encryptedApiKey,
             password: encryptedPassword,
             schedule,
           });
@@ -39,7 +34,7 @@ module.exports = function userIdCollection(db, logger, bcrypt) {
       const { id } = req.params;
       const { active } = req.body;
       try {
-        const user = await db.user.getUserById({ id });
+        const user = await db.user.getUserById(id);
         if (!user) {
           return res.status(404).json({ message: 'User does not exist' });
         }
