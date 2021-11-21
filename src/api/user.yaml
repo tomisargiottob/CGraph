@@ -19,12 +19,6 @@ collection:
               password:
                 type: string
                 minLength: 8
-              active:
-                type: boolean
-                default: true
-              wallet:
-                type: array
-                default: []
     responses:
       '200':
         description: User succesfully created
@@ -75,8 +69,6 @@ instance:
             properties:
               password:
                 type: string
-              apiKey:
-                type: string
               schedule:
                 type: object
                 properties:
@@ -90,8 +82,7 @@ instance:
         content:
           application/json:
             schema:
-              type: string
-              
+              type: string      
       '401':
         $ref: './errors.yaml#/401'
       '500':
@@ -118,77 +109,6 @@ instance:
       '500':
         $ref: './errors.yaml#/500'
 
-wallet:
-  get:
-    summary: Get User wallet Information
-    operationId: Get Wallet
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-    responses:
-      '200':
-        description: Wallet Found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Wallet'
-      '401':
-        $ref: './errors.yaml#/401'
-      '500':
-        $ref: './errors.yaml#/500'
-
-apiKey:
-  patch:
-    summary: Add apiKey to user
-    operationId: patchApiKey
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-    responses:
-      '200':
-        description: ApiKey updated
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      '401':
-        $ref: './errors.yaml#/401'
-      '500':
-        $ref: './errors.yaml#/500'
-    
-login:
-  post:
-    summary: Login User
-    operationId: loginUser
-    requestBody:
-      description: Log in a user with credentials
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - username
-              - password
-            properties:
-              username:
-                type: string
-              password:
-                type: string
-    responses:
-      '200':
-        description: User logged in
-      '401':
-        $ref: './errors.yaml#/401'
-      '500':
-        $ref: './errors.yaml#/500'
- 
 components:
   schemas:
     User:
@@ -198,26 +118,7 @@ components:
           type: string
         name:
           type: string
-    Wallet:
-      type: array
-      items:
-        type: object
-        properties:
-          date:
-            type: date
-          inventory:
-            type: array
-            items:
-              type: object
-              properties:
-                coin:
-                  type: string
-                ammount:
-                  type: number
-                price:
-                  type: number
-                averageCost:
-                  type: number
-          value:
-            type: number
-        
+        active:
+          type: boolean
+        token:
+          type: string
