@@ -1,10 +1,14 @@
-module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid, scheduler) {
+module.exports = function userController(db, logger, config, jwt, bcrypt, uuid) {
+  const controllerLogger = logger.child({ module: 'userController' });
   return {
     post: async function registerUser(req, res) {
+      const postLogger = controllerLogger.child({ function: 'registerUser' });
       const { username, password } = req.body;
+      postLogger.info('Create user request recieved');
       try {
-        const oldUser = await db.user.getUser({ username });
+        const oldUser = await db.user.getUser(username);
         if (oldUser) {
+          postLogger.info('User already existed');
           return res.status(409).send('Username already registered, please logIn or try an otherone');
         }
         const encryptedPassword = await bcrypt.hash(password, 10);
@@ -13,7 +17,7 @@ module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid, 
           username,
           password: encryptedPassword,
         });
-        scheduler.program(user);
+        postLogger.info({ user: user.id }, 'User succesfully created');
         const token = jwt.sign(
           // eslint-disable-next-line no-underscore-dangle
           { user_id: user.id },
@@ -25,7 +29,7 @@ module.exports = function userCollection(db, logger, config, jwt, bcrypt, uuid, 
         user.token = token;
         return res.status(201).json(user.toJson());
       } catch (err) {
-        logger.error(err);
+        postLogger.error(err);
         return res.status(500).json({ message: 'User could not be registered' });
       }
     },
