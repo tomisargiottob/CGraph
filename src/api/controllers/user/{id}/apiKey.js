@@ -1,4 +1,4 @@
-module.exports = function userApiKeyCollection(db, logger, uuid, binance, bcrypt, scheduler) {
+module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryptor, scheduler) {
   const controllerLogger = logger.child({ module: 'userController' });
   return {
     get: async function getApiKeys(req, res) {
@@ -36,8 +36,8 @@ module.exports = function userApiKeyCollection(db, logger, uuid, binance, bcrypt
       }
       const encryptedApiKey = {
         id: uuid(),
-        apiKey: await bcrypt.hash(apiKey, 10),
-        apiSecret: await bcrypt.hash(apiSecret, 10),
+        apiKey: await encryptor.encrypt(apiKey),
+        apiSecret: await encryptor.encrypt(apiSecret),
         account,
       };
       postLogger.info({ user: id }, 'ApiKey valid, saving it in database');
