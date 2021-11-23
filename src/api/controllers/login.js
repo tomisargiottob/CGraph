@@ -1,4 +1,5 @@
 module.exports = function loginController(db, logger, bcrypt, config, jwt) {
+  // TODO ADD LOGS
   return {
     post: async function loginUser(req, res) {
       try {
