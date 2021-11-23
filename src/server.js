@@ -13,7 +13,8 @@ const logger = require('./components/logger/logger');
 const database = require('./components/database/index');
 // const { verifyToken } = require('./middlewares/authentication.middleware');
 const BinanceClient = require('./components/connectors/binance/index');
-// const Wallet = require('./components/database/collections/wallet');
+const Encryptor = require('./components/crypto/index');
+const Marketer = require('./components/marketer/index');
 
 function errorHandler(err, req, res, next) {
   if (err.status === 400) {
@@ -35,8 +36,16 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   // app.use(verifyToken);
-  const scheduler = new Scheduler(database, logger);
+  const marketer = new Marketer(logger, deps[1]);
   const binance = new BinanceClient(logger);
+  const encryptor = new Encryptor(logger);
+  const scheduler = new Scheduler({
+    database,
+    logger,
+    encryptor,
+    binance,
+    marketer,
+  });
   await scheduler.init();
   // app.use(enteringRequest); // DEVELOP
   initialize({
@@ -51,6 +60,7 @@ async function main() {
       uuid,
       scheduler,
       binance,
+      encryptor,
     },
     promiseMode: true,
     errorMiddleware: errorHandler,
