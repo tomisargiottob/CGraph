@@ -23,7 +23,7 @@ class Wallet {
     try {
       // if (filter.limit) {
       // }
-      await this.collection.insertOne({ id: uuid(), userId: id, wallet: data });
+      await this.collection.insertOne({ _id: uuid(), userId: id, wallet: data });
       return true;
     } catch (err) {
       this.logger.error(err);
