@@ -10,3 +10,6 @@ auth:
 
 logger:
   level: trace
+
+crypto:
+  secretKey: $%&456536#$%&GDSegw
