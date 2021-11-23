@@ -39,6 +39,16 @@ class BinanceClient {
     }
     return { valid: !invalid, error };
   }
+
+  async getWalletStatus(apiKey, apiSecret) {
+    const logger = this.logger.child({ function: 'getWalletStatus' });
+    const client = new Spot(apiKey, apiSecret);
+    const response = await client.accountStatus();
+    logger.info(response.data);
+    // const wallet = response.data.map((asset) => {
+    //   return 
+    // })
+  }
 }
 
 module.exports = BinanceClient;
