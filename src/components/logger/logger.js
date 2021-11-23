@@ -1,4 +1,5 @@
 const config = require('config');
+const pino = require('pino');
 
 const formatters = {
   bindings() {
@@ -9,7 +10,7 @@ const formatters = {
   },
 };
 
-const logger = require('pino')({
+const logger = pino({
   timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
   formatters,
   level: config.logger.level,
