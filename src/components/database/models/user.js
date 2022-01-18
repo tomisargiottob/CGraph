@@ -84,37 +84,6 @@ class User {
     return this;
   }
 
-  async updateUser(id, updateData) {
-    let {
-      password,
-      active,
-    } = updateData;
-    try {
-      if (!password) {
-        password = this.password;
-      }
-      if (!active) {
-        active = this.active;
-      }
-      await this.collection.findOneAndUpdate(
-        { _id: id },
-        {
-          $set:
-            {
-              password,
-              active,
-            },
-        },
-        { returnDocument: 'after' },
-      );
-      this.password = password;
-      this.active = active;
-    } catch (err) {
-      this.logger.error(err);
-    }
-    return this;
-  }
-
   toJson() {
     return {
       id: this.id,

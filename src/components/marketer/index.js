@@ -1,4 +1,6 @@
 const axios = require('axios');
+const { v4: uuid } = require('uuid');
+const coinMarketCap = require('./coinmarketcap');
 
 class Marketer {
   constructor(logger, database) {
@@ -13,15 +15,27 @@ class Marketer {
   async getMarketData() {
     const log = this.logger.child({ function: 'getMarketData' });
     log.info('Recopilando información del mercado');
-    const market = await this.client.get('api/v1/assets?fields=id,slug,symbol,metrics/market_data/price_usd&limit=500');
-    // console.log(market);
-    market.data.data.some((asset) => {
-      if (asset.symbol === 'BTC') {
-        console.log(new Date(), asset.metrics.market_data.price_usd);
-        return true;
-      }
-      return false;
+    // const market = await this.client.get('api/v2/assets?fields=id,name,symbol,metrics/market_data/price_usd&limit=500');
+    // // eslint-disable-next-line arrow-body-style
+    // const marketPrices = market.data.data.map((asset) => {
+    //   return ({
+    //     symbol: asset.symbol,
+    //     name: asset.name,
+    //     price: asset.metrics.market_data.price_usd,
+    //   });
+    // });
+    // return this.marketDataFormater(marketPrices);
+    const data = await coinMarketCap.getTickerPrice();
+    return { data, id: uuid() };
+  }
+
+  marketDataFormater(data) {
+    this.logger.info('Formating market data');
+    const result = {};
+    data.forEach((coin) => {
+      result[coin.symbol] = coin.price;
     });
+    return result;
   }
 }
 

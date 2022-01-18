@@ -14,7 +14,7 @@ module.exports = function userIdController(db, logger, bcrypt) {
     },
     patch: async function registerUser(req, res) {
       const { id } = req.params;
-      const { password, schedule } = req.body;
+      const { password } = req.body;
       let encryptedPassword;
       try {
         if (password) {
@@ -23,11 +23,11 @@ module.exports = function userIdController(db, logger, bcrypt) {
         await db.user.updateUser(id,
           {
             password: encryptedPassword,
-            schedule,
+            // schedule,
           });
         return res.status(200).json({ message: 'User information updated succesfully' });
-      } catch {
-        return res.status(500).json({ message: 'Server did not respond' });
+      } catch (err) {
+        return res.status(500).json({ message: `Server did not respond, ${err}` });
       }
     },
     delete: async function registerUser(req, res) {

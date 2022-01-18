@@ -40,14 +40,21 @@ class BinanceClient {
     return { valid: !invalid, error };
   }
 
-  async getWalletStatus(apiKey, apiSecret) {
+  async getWalletStatus({ apiKey, apiSecret }) {
     const logger = this.logger.child({ function: 'getWalletStatus' });
     const client = new Spot(apiKey, apiSecret);
-    const response = await client.accountStatus();
-    logger.info(response.data);
-    // const wallet = response.data.map((asset) => {
-    //   return 
-    // })
+    const response = await client.account();
+    logger.info('Information succesfully fetched');
+    return response.data;
+  }
+
+  async getTickerPrice(ticker, apiKey, apiSecret) {
+    const logger = this.logger.child({ function: 'getWalletStatus' });
+    const client = new Spot(apiKey, apiSecret);
+    const response = await client.tickerPrice(`${ticker}USDT`);
+    logger.info(`Ticker Information of ${ticker} succesfully fetched`);
+    console.log(ticker, response.data.price);
+    return response.data.price;
   }
 }
 

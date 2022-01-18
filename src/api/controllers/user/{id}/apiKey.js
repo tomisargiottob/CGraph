@@ -42,8 +42,6 @@ module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryp
       };
       postLogger.info({ user: id }, 'ApiKey valid, saving it in database');
       user = await user.addApiKeys(encryptedApiKey);
-      postLogger.info({ user: id }, 'Adding user to schedule');
-      scheduler.program(user);
       return res.status(200).json(user.toJson());
     },
   };

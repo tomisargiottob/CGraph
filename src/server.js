@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 const { v4: uuid } = require('uuid');
 const Scheduler = require('./components/scheduler/index');
 const logger = require('./components/logger/logger');
-const database = require('./components/database/index');
+const Database = require('./components/database/index');
 // const { verifyToken } = require('./middlewares/authentication.middleware');
 const BinanceClient = require('./components/connectors/binance/index');
 const Encryptor = require('./components/crypto/index');
@@ -27,6 +27,7 @@ function errorHandler(err, req, res, next) {
 }
 
 async function main() {
+  const database = new Database();
   const deps = await Promise.all([
     openapiParser.dereference('src/api/openapi.yml'),
     database.connect(),
@@ -36,7 +37,7 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   // app.use(verifyToken);
-  const marketer = new Marketer(logger, deps[1]);
+  const marketer = new Marketer(logger, database);
   const binance = new BinanceClient(logger);
   const encryptor = new Encryptor(logger);
   const scheduler = new Scheduler({

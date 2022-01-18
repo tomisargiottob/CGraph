@@ -18,6 +18,7 @@
     "@binance/connector": "^1.5.0",
     "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
+    "coinmarketcap-api": "^3.1.1",
     "config": "^3.3.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",

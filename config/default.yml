@@ -13,3 +13,6 @@ logger:
 
 crypto:
   secretKey: $%&456536#$%&GDSegw
+
+coinmarketcap:
+  apiKey: 705e85d2-f70f-4525-8b13-108567b2d5c5
