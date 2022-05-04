@@ -7,11 +7,18 @@ class Wallet {
     this.logger = logger;
   }
 
-  async getUserWallet(id) {
+  async getUserWallet(id, where) {
     try {
-      // if (filter.limit) {
-      // }
-      const registersFetched = await this.collection.find({ userId: id });
+      const filter = { createdAt: {} };
+      let today;
+      let pastDate;
+      if (!where) {
+        today = new Date();
+        pastDate = today.setMonth(today.getMonth() - 3);
+      }
+      filter.createdAt.$gt = Number(where.createdAt.gt) || pastDate.getTime();
+      filter.createdAt.$lt = Number(where.createdAt.lt) || today.getTime();
+      const registersFetched = await this.collection.find({ userId: id, ...filter }).toArray();
       return registersFetched;
     } catch (err) {
       this.logger.error(err);
