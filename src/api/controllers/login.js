@@ -1,5 +1,4 @@
-module.exports = function loginController(db, logger, bcrypt, config, jwt) {
-  // TODO ADD LOGS
+module.exports = function loginController(db, logger, bcrypt, config, jwt, redis) {
   return {
     post: async function loginUser(req, res) {
       try {
@@ -16,9 +15,13 @@ module.exports = function loginController(db, logger, bcrypt, config, jwt) {
               },
             );
             user.token = token;
-            res.status(200).json(user.toJson());
+            const userJson = user.toJson();
+            await redis.saveUser(userJson);
+            logger.info(`${username} succesfully logged in`);
+            res.status(200).json(userJson);
           } else {
-            res.status(400).json({ message: 'Invalid Credentials' });
+            logger.info(`Invalid credentials for ${username} `);
+            res.status(401).json({ message: 'Invalid Credentials' });
           }
         } else {
           res.status(404).json({ message: 'User does not exist' });
