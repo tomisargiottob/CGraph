@@ -4,6 +4,10 @@ module.exports = function userController(db, logger, config, jwt, bcrypt, uuid) 
     post: async function registerUser(req, res) {
       const postLogger = controllerLogger.child({ function: 'registerUser' });
       const { username, password } = req.body;
+      if (!username || !password) {
+        postLogger.error('Missing information to create user');
+        return res.status(400).json({ message: 'Missing required information' });
+      }
       postLogger.info('Create user request recieved');
       try {
         const oldUser = await db.user.getUser(username);
@@ -22,9 +26,6 @@ module.exports = function userController(db, logger, config, jwt, bcrypt, uuid) 
           // eslint-disable-next-line no-underscore-dangle
           { user_id: user.id },
           config.auth.secret,
-          {
-            expiresIn: '1h',
-          },
         );
         user.token = token;
         return res.status(201).json(user.toJson());

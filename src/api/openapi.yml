@@ -6,7 +6,9 @@ info:
 paths:
   /login:
     $ref: ./login.yaml#/login
-  /user:
+  /logout:
+    $ref: ./logout.yaml#/logout
+  /users:
     $ref: ./user.yaml#/collection
   /user/{id}:
     $ref: ./user.yaml#/instance

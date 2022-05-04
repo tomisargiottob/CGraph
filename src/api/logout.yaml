@@ -1,0 +1,15 @@
+logout:
+  post:
+    summary: Logout User
+    operationId: logoutUser
+    responses:
+      '204':
+        description: User logged out 
+        content:
+          application/json:
+            schema:
+              $ref: './user.yaml#/components/schemas/User'
+      '404':
+        $ref: './errors.yaml#/404'
+      '500':
+        $ref: './errors.yaml#/500'
