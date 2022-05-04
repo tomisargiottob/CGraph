@@ -1,0 +1,23 @@
+app:
+  port: 3000
+
+mongodb:
+  uri: <uri>
+  dbName: <dbName>
+
+auth:
+  secret: <sessionSecret>
+  duration: <sessionDuration
+
+logger:
+  level: trace
+
+crypto:
+  secretKey: <apiKeyEncription>
+
+coinmarketcap:
+  apiKey: <coinmarketcap>
+  limit: 5000
+
+scheduler:
+  time: 86400000
