@@ -15,16 +15,6 @@ class Marketer {
   async getMarketData() {
     const log = this.logger.child({ function: 'getMarketData' });
     log.info('Recopilando información del mercado');
-    // const market = await this.client.get('api/v2/assets?fields=id,name,symbol,metrics/market_data/price_usd&limit=500');
-    // // eslint-disable-next-line arrow-body-style
-    // const marketPrices = market.data.data.map((asset) => {
-    //   return ({
-    //     symbol: asset.symbol,
-    //     name: asset.name,
-    //     price: asset.metrics.market_data.price_usd,
-    //   });
-    // });
-    // return this.marketDataFormater(marketPrices);
     const data = await coinMarketCap.getTickerPrice();
     return { data, id: uuid() };
   }
