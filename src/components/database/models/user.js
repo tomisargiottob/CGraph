@@ -1,3 +1,5 @@
+const logger = require('../../logger/logger');
+
 class User {
   constructor(collection, data) {
     this.collection = collection;
@@ -39,7 +41,7 @@ class User {
       );
       this.schedule = schedule;
     } catch (err) {
-      console.log('could not update user schedule');
+      logger.warn('could not update user schedule');
     }
     return this;
   }
@@ -60,7 +62,7 @@ class User {
       );
       this.apiKey = apiKeys;
     } catch (err) {
-      console.log('could not update user apiKeys');
+      logger.warn('could not update user apiKeys');
     }
     return this;
   }
@@ -79,7 +81,7 @@ class User {
       );
       this.apiKey = this.apiKey.filter((apiKey) => id.includes(apiKey.id));
     } catch (err) {
-      console.log('could not remove user apiKey');
+      logger.warn('could not remove user apiKey');
     }
     return this;
   }
@@ -90,6 +92,7 @@ class User {
       username: this.username,
       schedule: this.schedule,
       active: this.active,
+      token: this.token,
     };
   }
 }
