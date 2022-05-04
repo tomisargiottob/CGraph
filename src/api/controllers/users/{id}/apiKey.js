@@ -1,4 +1,4 @@
-module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryptor, scheduler) {
+module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryptor) {
   const controllerLogger = logger.child({ module: 'userController' });
   return {
     get: async function getApiKeys(req, res) {

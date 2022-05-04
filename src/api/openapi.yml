@@ -10,13 +10,13 @@ paths:
     $ref: ./logout.yaml#/logout
   /users:
     $ref: ./user.yaml#/collection
-  /user/{id}:
+  /users/{id}:
     $ref: ./user.yaml#/instance
-  /user/{id}/wallet:
+  /users/{id}/wallet:
     $ref: ./wallet.yaml#/collection
-  /user/{id}/apiKey:
+  /users/{id}/apiKey:
     $ref: ./apiKey.yaml#/collection
-  /user/{id}/apiKey/{apiKey}:
+  /users/{id}/apiKey/{apiKey}:
     $ref: ./apiKey.yaml#/instance
 
 
