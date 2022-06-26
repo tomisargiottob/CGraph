@@ -1,6 +1,6 @@
-const { v4: uuid } = require('uuid');
+const MarketModel = require('../models/market');
 
-class Wallet {
+class Market {
   constructor(db, logger) {
     this.db = db;
     this.collection = this.db.collection('market');
@@ -10,8 +10,9 @@ class Wallet {
   async getLastMarket() {
     try {
       this.logger.info('Buscando el ultimo registro del mercado guardado');
-      const market = await this.collection.find().sort({ createdAt: 1 }).limit(1);
-      return market;
+      const market = await this.collection.find().sort({ createdAt: -1 }).limit(1).toArray();
+      const lastMarket = new MarketModel(this.collection, market[0]);
+      return lastMarket;
     } catch (err) {
       this.logger.error(err);
       throw err;
@@ -30,4 +31,4 @@ class Wallet {
   }
 }
 
-module.exports = Wallet;
+module.exports = Market;

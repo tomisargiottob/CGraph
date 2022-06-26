@@ -20,7 +20,21 @@ class Scheduler {
   async init() {
     const logger = this.logger.child({ function: 'init' });
     logger.info('Scheduling requests for all users');
-    this.programMarketData();
+    const lastMarket = await this.db.market.getLastMarket();
+    const nextMarketTime = lastMarket.createdAt - Date.now() + config.scheduler.time;
+    if (nextMarketTime > 0) {
+      logger.info(`Se ha encontrado una consulta menor al intervalo establecido, , proxima consulta en ${nextMarketTime / (1000 * 60 * 60)} horas`);
+      schedule.scheduleJob(
+        nextMarketTime,
+        async () => {
+          logger.info('Se consulta la información del mercado');
+          await this.programMarketData();
+        },
+      );
+    } else {
+      logger.info('Han pasado mas de 24 horas desde la ultima consulta, se consulta la información del mercado');
+      await this.programMarketData();
+    }
   }
 
   async programMarketData() {
@@ -55,21 +69,19 @@ class Scheduler {
             value += individualValue;
           } else {
             logger.info(`missing price for ${crypto.asset}`);
-            promises.push(new Promise((resolve) => {
-              marketData[crypto.asset] = this.binance.getTickerPrice(
-                crypto.asset,
-                apiKey,
-                apiSecret,
-              ).then((price) => {
-                marketData[crypto.asset] = price;
+            promises.push(async () => {
+              try {
+                marketData[crypto.asset] = await this.binance.getTickerPrice(
+                  crypto.asset,
+                  apiKey,
+                  apiSecret,
+                );
                 value += (assets) * marketData[crypto.asset];
-                resolve();
-              })
-                .catch((err) => {
-                  logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
-                  resolve();
-                });
-            }));
+                logger.info(`Price found for ${crypto.asset}, adding to memory and user wallet`);
+              } catch (err) {
+                logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
+              }
+            });
           }
         }
       });
