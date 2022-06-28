@@ -23,16 +23,16 @@ class Scheduler {
     const lastMarket = await this.db.market.getLastMarket();
     const nextMarketTime = lastMarket.createdAt - Date.now() + config.scheduler.time;
     if (nextMarketTime > 0) {
-      logger.info(`Se ha encontrado una consulta menor al intervalo establecido, , proxima consulta en ${nextMarketTime / (1000 * 60 * 60)} horas`);
+      logger.info(`Data has been fetched in the past hours, scheduling next request in ${nextMarketTime / (1000 * 60 * 60)} hours`);
       schedule.scheduleJob(
         nextMarketTime,
         async () => {
-          logger.info('Se consulta la información del mercado');
+          logger.info('Excecuting scheduled request to fetch market data');
           await this.programMarketData();
         },
       );
     } else {
-      logger.info('Han pasado mas de 24 horas desde la ultima consulta, se consulta la información del mercado');
+      logger.info('24 hours have passed since the last market data register, fetching market data');
       await this.programMarketData();
     }
   }
@@ -42,7 +42,7 @@ class Scheduler {
     const scheduleTime = initialTime + config.scheduler.time;
     const logger = this.logger.child({ function: 'programMarketData' });
 
-    logger.info('Se agrega la tarea planificada de consultar la informacion');
+    logger.info('Fetching market data');
 
     const market = await this.marketer.getMarketData();
     const marketId = market.id;
@@ -55,7 +55,7 @@ class Scheduler {
       const apiKey = await this.encryptor.decrypt(user.apiKey[0].apiKey);
       const apiSecret = await this.encryptor.decrypt(user.apiKey[0].apiSecret);
 
-      logger.info(`Se consulta la información del usuario ${user.username}`);
+      logger.info(`Fetching user ${user.username} wallet information`);
 
       const account = await this.binance.getWalletStatus({ apiKey, apiSecret });
       const promises = [];
@@ -93,7 +93,7 @@ class Scheduler {
     schedule.scheduleJob(
       scheduleTime,
       async () => {
-        logger.info('Se consulta la información del mercado');
+        logger.info('Excecuting scheduled request to fetch market data');
         await this.programMarketData();
       },
     );

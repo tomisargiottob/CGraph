@@ -15,7 +15,7 @@ class Encrypter {
     if (text.startsWith('{"iv":')) return text;
     const cipher = crypto.createCipheriv('aes-256-ctr', this.secretKey, iv);
     const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-    logger.info('Texted encrypted succesfully');
+    logger.info('Text succesfully encrypted');
     return JSON.stringify({
       iv: iv.toString('hex'),
       content: encrypted.toString('hex'),

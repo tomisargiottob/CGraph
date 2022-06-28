@@ -14,9 +14,14 @@ class Marketer {
 
   async getMarketData() {
     const log = this.logger.child({ function: 'getMarketData' });
-    log.info('Recopilando información del mercado');
-    const data = await coinMarketCap.getTickerPrice();
-    return { data, id: uuid() };
+    try {
+      log.info('Fetching market information');
+      const data = await coinMarketCap.getTickerPrice();
+      return { data, id: uuid() };
+    } catch (err) {
+      log.error({ reason: err.message }, 'Could not get market information');
+      throw err;
+    }
   }
 
   marketDataFormater(data) {

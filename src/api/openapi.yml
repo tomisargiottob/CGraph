@@ -3,6 +3,9 @@ info:
   title: CryptoMetrics API
   version: 0.0.1
   description: An app to view all the metrics of your cryptowallet
+servers:
+- url: http://localhost:3000/api/v1
+  description: The development API server
 paths:
   /login:
     $ref: ./login.yaml#/login

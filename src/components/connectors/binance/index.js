@@ -53,7 +53,6 @@ class BinanceClient {
     const client = new Spot(apiKey, apiSecret);
     const response = await client.tickerPrice(`${ticker}USDT`);
     logger.info(`Ticker Information of ${ticker} succesfully fetched`);
-    console.log(ticker, response.data.price);
     return response.data.price;
   }
 }
