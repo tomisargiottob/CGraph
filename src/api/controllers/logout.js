@@ -6,7 +6,7 @@ module.exports = function loginController(db, logger, bcrypt, config, jwt, redis
         logger.info(`request to logout from ${req.user && req.user.username} succesfully processed`);
         res.status(204).json();
       } catch (err) {
-        logger.info(`${req.user.username} could not log out due to ${err.message} `);
+        logger.info(`${req.user && req.user.username} could not log out due to ${err.message} `);
         res.status(500).json(err.message);
       }
     },

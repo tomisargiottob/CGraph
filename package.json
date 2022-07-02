@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node src/server.js --attach | bunyan -L",
-    "start": "node src/server.js | bunyan -L"
+    "debug": "node src/server.js --attach | pino-pretty -S",
+    "start": "node src/server.js | pino-pretty -S"
   },
   "repository": {
     "type": "git",

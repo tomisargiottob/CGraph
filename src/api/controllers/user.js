@@ -1,4 +1,4 @@
-module.exports = function userController(db, logger, config, jwt, bcrypt, uuid) {
+module.exports = function userController(db, logger, config, jwt, bcrypt, uuid, redis) {
   const controllerLogger = logger.child({ module: 'userController' });
   return {
     post: async function registerUser(req, res) {
@@ -23,12 +23,13 @@ module.exports = function userController(db, logger, config, jwt, bcrypt, uuid) 
         });
         postLogger.info({ user: user.id }, 'User succesfully created');
         const token = jwt.sign(
-          // eslint-disable-next-line no-underscore-dangle
           { user_id: user.id },
           config.auth.secret,
         );
         user.token = token;
-        return res.status(201).json(user.toJson());
+        const userJson = user.toJson();
+        await redis.saveUser(userJson);
+        return res.status(201).json(userJson);
       } catch (err) {
         postLogger.error(err);
         return res.status(500).json({ message: 'User could not be registered' });
