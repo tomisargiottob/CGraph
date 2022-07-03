@@ -5,6 +5,9 @@ mongodb:
   uri: <uri>
   dbName: <dbName>
 
+redis:
+  endpoint: <uri>
+
 auth:
   secret: <sessionSecret>
   duration: <sessionDuration

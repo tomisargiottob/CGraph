@@ -18,7 +18,7 @@ function verifySession(redis) {
         }
         req.user = JSON.parse(user);
       } catch (err) {
-        log.info('Could not process request session');
+        log.info({ reason: err.message }, 'Could not process request session');
         return res.status(500).json({ message: 'Could not process request session' });
       }
       return next();

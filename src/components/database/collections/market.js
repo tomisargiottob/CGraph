@@ -4,7 +4,7 @@ class Market {
   constructor(db, logger) {
     this.db = db;
     this.collection = this.db.collection('market');
-    this.logger = logger;
+    this.logger = logger.child({ module: 'Market' });
   }
 
   async getLastMarket() {

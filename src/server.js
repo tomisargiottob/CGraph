@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { v4: uuid } = require('uuid');
 const Scheduler = require('./components/scheduler/index');
-const logger = require('./components/logger/logger');
+const logger = require('./components/logger/logger').child({ module: 'Main' });
 const Database = require('./components/database/index');
 const RedisConnector = require('./components/redis-sessions/index');
 const { verifySession } = require('./middlewares/authentication.middleware');
@@ -27,7 +27,7 @@ function errorHandler(err, req, res, next) {
 }
 
 async function main() {
-  const database = new Database();
+  const database = new Database(logger);
   const redis = new RedisConnector();
   const deps = await Promise.all([
     openapiParser.dereference('src/api/openapi.yml'),

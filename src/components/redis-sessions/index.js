@@ -6,7 +6,7 @@ class RedisConnector {
   constructor() {
     this.logger = logger.child({ module: 'RedisConnector' });
     this.client = createClient({
-      url: 'redis://localhost:6379',
+      url: config.redis.endpoint,
     });
     this.client.on('error', (err) => this.logger.info(`Redis Client Error, ${err}`));
   }
@@ -20,7 +20,8 @@ class RedisConnector {
   }
 
   async getUser(token) {
-    const user = await this.client.getEx(token, { EX: config.auth.duration });
+    const user = await this.client.get(token);
+    await this.client.expire(token, config.auth.duration);
     return user;
   }
 
