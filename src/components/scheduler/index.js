@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 const schedule = require('node-schedule');
 const config = require('config');
 
@@ -25,7 +27,7 @@ class Scheduler {
     if (nextMarketTime > 0) {
       logger.info(`Data has been fetched in the past hours, scheduling next request in ${nextMarketTime / (1000 * 60 * 60)} hours`);
       schedule.scheduleJob(
-        nextMarketTime,
+        new Date(Date.now() + config.scheduler.time),
         async () => {
           logger.info('Excecuting scheduled request to fetch market data');
           await this.programMarketData();
@@ -58,9 +60,8 @@ class Scheduler {
       logger.info(`Fetching user ${user.username} wallet information`);
 
       const account = await this.binance.getWalletStatus({ apiKey, apiSecret });
-      const promises = [];
       const wallet = { assets: [], value: 0 };
-      account.balances.forEach(async (crypto) => {
+      for (const crypto of account.balances) {
         const assets = Number(crypto.free) + Number(crypto.locked);
         if (assets > 0) {
           if (marketData[crypto.asset]) {
@@ -69,23 +70,20 @@ class Scheduler {
             value += individualValue;
           } else {
             logger.info(`missing price for ${crypto.asset}`);
-            promises.push(async () => {
-              try {
-                marketData[crypto.asset] = await this.binance.getTickerPrice(
-                  crypto.asset,
-                  apiKey,
-                  apiSecret,
-                );
-                value += (assets) * marketData[crypto.asset];
-                logger.info(`Price found for ${crypto.asset}, adding to memory and user wallet`);
-              } catch (err) {
-                logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
-              }
-            });
+            try {
+              marketData[crypto.asset] = await this.binance.getTickerPrice(
+                crypto.asset,
+                apiKey,
+                apiSecret,
+              );
+              value += (assets) * marketData[crypto.asset];
+              logger.info(`Price found for ${crypto.asset}, adding to memory and user wallet. Price of ${marketData[crypto.asset]}`);
+            } catch (err) {
+              logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
+            }
           }
         }
-      });
-      await Promise.all(promises);
+      }
       wallet.value = value;
       await this.db.wallet.addUserRegister(user.id, wallet, initialTime, marketId);
     });
