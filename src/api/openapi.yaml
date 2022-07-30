@@ -21,13 +21,18 @@ paths:
     $ref: ./apiKey.yaml#/collection
   /users/{id}/apiKey/{apiKey}:
     $ref: ./apiKey.yaml#/instance
+  /users/{id}/apiKey/{apiKey}/enable:
+    $ref: ./apiKey.yaml#/enable
+  /users/{id}/apiKey/{apiKey}/disable:
+    $ref: ./apiKey.yaml#/disable
 
 
 components:
   securitySchemes:
-    BasicAuth:
-      type: http
-      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-access-token
 
 security:
-  - BasicAuth: []
+  - ApiKeyAuth: []

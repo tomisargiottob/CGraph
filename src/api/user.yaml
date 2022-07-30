@@ -19,11 +19,17 @@ collection:
               password:
                 type: string
                 minLength: 8
+              firstName:
+                type: string
+              surname:
+                type: string
+              birthDate:
+                type: string
     responses:
       '200':
         description: User succesfully created
-      '401':
-        $ref: './errors.yaml#/401'
+      '400':
+        $ref: './errors.yaml#/400'
       '500':
         $ref: './errors.yaml#/500'
 

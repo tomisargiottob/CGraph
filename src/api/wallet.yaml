@@ -1,7 +1,7 @@
 collection:
   get:
     summary: Get User wallet Information
-    operationId: GetUserWallet
+    operationId: getWallet
     parameters:
       - name: id
         in: path

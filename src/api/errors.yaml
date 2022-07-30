@@ -11,6 +11,19 @@
             type: number
         default: {message: Object not found in database, code: 404}
 
+'400':
+  description: Bad Request
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          message: 
+            type: string
+          code: 
+            type: number
+        default: {message: Data sent to server is not correct, code: 400}
+
 '401':
   description: Unauthorized
   content:

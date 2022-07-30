@@ -1,7 +1,7 @@
 collection:
   post:
     summary: Add User apiKey Information
-    operationId: updateWalletApiKey
+    operationId: registerApiKey
     parameters:
       - name: id
         in: path
@@ -45,7 +45,7 @@ collection:
         $ref: './errors.yaml#/500'
   get:
     summary: Get all User apiKeys
-    operationId: updateWalletApiKey
+    operationId: getApiKeys
     parameters:
       - name: id
         in: path
@@ -58,7 +58,12 @@ collection:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/apiKey'
+              type: object
+              properties:
+                apiKeys:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/apiKey'
       '401':
         $ref: './errors.yaml#/401'
       '500':
@@ -67,7 +72,7 @@ collection:
 instance:
   delete:
     summary: Remove apiKey from User Information
-    operationId: removeWalletApiKey
+    operationId: removeApiKey
     parameters:
       - name: id
         in: path
@@ -92,6 +97,70 @@ instance:
       '500':
         $ref: './errors.yaml#/500'
 
+enable:
+  post:
+    summary: Enable user apiKey
+    operationId: enableApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: apiKey
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: User ApiKey enabled
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      '401':
+        $ref: './errors.yaml#/401'
+      '404':
+        $ref: './errors.yaml#/404'
+      '500':
+        $ref: './errors.yaml#/500'
+
+disable:
+  post:
+    summary: Disable user apiKey
+    operationId: disableApiKey
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: apiKey
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: User apiKey disabled
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      '401':
+        $ref: './errors.yaml#/401'
+      '404':
+        $ref: './errors.yaml#/404'
+      '500':
+        $ref: './errors.yaml#/500'
+
 components: 
   schemas:
     apiKey:
@@ -106,8 +175,9 @@ components:
             enum:
               - binance
               - kucoin
-              - coinbase 
-          # apiKey:
-          #   type: string
-          # apiSecret:
-          #   type: string   
+              - coinbase
+          status:
+            type: string
+          createdAt:
+            type: number
+          
