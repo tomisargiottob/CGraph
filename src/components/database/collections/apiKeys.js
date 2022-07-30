@@ -6,8 +6,8 @@ class ApiKey {
     this.collection = this.db.collection('apiKeys');
   }
 
-  async getUserApiKeys(userId) {
-    const apiKeys = await this.collection.find({ userId }).toArray();
+  async getUserApiKeys(userId, where) {
+    const apiKeys = await this.collection.find({ userId, ...where }).toArray();
     const userApiKeys = apiKeys.map((key) => new ApiKeyModel(this.collection, key));
     return userApiKeys || [];
   }

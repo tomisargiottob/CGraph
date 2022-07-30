@@ -49,12 +49,15 @@ class Scheduler {
     const market = await this.marketer.getMarketData();
     const marketData = market.data;
     const marketId = market.id;
-    const where = { active: true, 'apiKey.0': { $exists: true } };
+    const where = { active: true };
     const users = await this.db.user.getAllUsers({ where });
 
     for (const user of users) {
       let value = 0;
-      const userApiKeys = await this.db.apiKeys.getUserApiKeys(user.id);
+      const userApiKeys = await this.db.apiKey.getUserApiKeys(user.id, { status: 'active' });
+      if (!userApiKeys.length) {
+        logger.info(`${user.username} has no active apiKeys`);
+      }
       for (const key of userApiKeys) {
         const apiKey = await this.encryptor.decrypt(key.apiKey);
         const apiSecret = await this.encryptor.decrypt(key.apiSecret);
