@@ -15,6 +15,10 @@ paths:
     $ref: ./user.yaml#/collection
   /users/{id}:
     $ref: ./user.yaml#/instance
+  /users/{id}/staticCrypto:
+    $ref: ./staticCrypto.yaml#/collection
+  /users/{id}/staticCrypto/{crypto}:
+    $ref: ./staticCrypto.yaml#/instance
   /users/{id}/wallet:
     $ref: ./wallet.yaml#/collection
   /users/{id}/apiKey:

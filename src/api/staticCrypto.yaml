@@ -1,0 +1,144 @@
+collection:
+  post:
+    description: 'Create a new static Crypto'
+    tags:
+      - StaticCryptos
+    parameters:
+      - name: id
+        in: params
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: 'Add user staticCrypto'
+      required:
+        - asset
+        - amount
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/staticCrypto'
+    responses:
+      '200':
+        description: Crypto created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/staticCrypto'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+        
+  get: 
+    description: 'Create a new static Crypto'
+    tags:
+      - StaticCryptos
+    parameters:
+      - name: id
+        in: params
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: static cryptos found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                staticCryptos:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/staticCrypto'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+instance:
+  delete:
+    description: 'Remove static Crypto'
+    tags:
+      - StaticCryptos
+    parameters:
+      - name: id
+        in: params
+        required: true
+        schema:
+          type: string
+      - name: crypto
+        in: params
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: Crypto deleted
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
+
+  patch:
+    description: 'update static Crypto'
+    tags:
+      - StaticCryptos
+    parameters:
+      - name: id
+        in: params
+        required: true
+        schema:
+          type: string
+      - name: crypto
+        in: params
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: 'Information to update staticCrypto'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              amount:
+                type: number
+                min: 0
+              averagePrice:
+                type: number
+    responses:
+      '200':
+        description: static cryptos updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/staticCrypto'
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500' 
+
+components:
+  schemas:
+    staticCrypto:
+      type: object
+      properties:
+        id: 
+          type: string
+          readOnly: true
+        userId:
+          type: string
+          readOnly: true
+        asset:
+          type: string
+        amount:
+          type: number
+          min: 0
+        createdAt: 
+          type: number
+          readOnly: true
+        averagePrice:
+          type: number
+      
