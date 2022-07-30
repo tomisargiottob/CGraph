@@ -3,7 +3,7 @@ const logger = require('../components/logger/logger');
 function verifySession(redis) {
   const log = logger.child({ module: 'sessionMiddleware' });
   return async (req, res, next) => {
-    const publicAccess = req.url === '/api/v1/login' || (req.url === '/api/v1/user' && req.method === 'POST') || req.url === '/api-doc/';
+    const publicAccess = req.url === '/api/v1/login' || (req.url === '/api/v1/users' && req.method === 'POST') || req.url.includes('/api-doc/');
     if (!publicAccess) {
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
       if (!token) {

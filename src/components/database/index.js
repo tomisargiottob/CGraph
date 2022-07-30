@@ -3,6 +3,7 @@ const config = require('config');
 const UserCollection = require('./collections/users');
 const WalletCollection = require('./collections/wallet');
 const MarketCollection = require('./collections/market');
+const ApiKeyCollection = require('./collections/apiKeys');
 
 class Database {
   constructor(logger) {
@@ -13,9 +14,10 @@ class Database {
   async connect() {
     this.db = await this.client.connect();
     this.dbo = this.db.db(config.mongodb.dbName);
-    this.user = new UserCollection(this.dbo, this.logger);
-    this.wallet = new WalletCollection(this.dbo, this.logger);
-    this.market = new MarketCollection(this.dbo, this.logger);
+    this.user = new UserCollection(this.dbo);
+    this.apiKey = new ApiKeyCollection(this.dbo);
+    this.wallet = new WalletCollection(this.dbo);
+    this.market = new MarketCollection(this.dbo);
     this.logger.info('Database connected succesfully');
   }
 }

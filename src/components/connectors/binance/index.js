@@ -41,11 +41,15 @@ class BinanceClient {
   }
 
   async getWalletStatus({ apiKey, apiSecret }) {
-    const logger = this.logger.child({ function: 'getWalletStatus' });
-    const client = new Spot(apiKey, apiSecret);
-    const response = await client.account();
-    logger.info('Information succesfully fetched');
-    return response.data;
+    try {
+      const client = new Spot(apiKey, apiSecret);
+      const response = await client.account();
+      this.logger.info({ function: 'getWalletStatus' }, 'Information succesfully fetched');
+      return response.data;
+    } catch (err) {
+      this.logger.error({ function: 'getWalletStatus' }, err.message);
+      return false;
+    }
   }
 
   async getTickerPrice(ticker, apiKey, apiSecret) {

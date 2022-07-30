@@ -2,47 +2,75 @@ module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryp
   const controllerLogger = logger.child({ module: 'userController' });
   return {
     get: async function getApiKeys(req, res) {
-      const getLogger = controllerLogger.child({ function: 'getApiKeys' });
       const { id } = req.params;
-      const user = await db.user.getUserById(id);
-      if (!user) {
-        getLogger.info({ user: id }, 'User does not exist');
-        return res.status(404).json({ message: 'User does not exist' });
+      const log = controllerLogger.child({ function: 'getApiKeys', userId: id });
+      try {
+        const user = await db.user.getUserById(id);
+        if (!user) {
+          log.info('User does not exist');
+          return res.status(404).json({ message: 'User does not exist' });
+        }
+        const apiKeys = await db.apiKey.getUserApiKeys(id);
+        log.info('User fetched, sending his ApiKeys');
+        const apiKeysJson = apiKeys.map((key) => key.toJson());
+        return res.status(200).json({ apiKeys: apiKeysJson });
+      } catch (err) {
+        log.error(err.message);
+        return res.status(500).json({ message: 'Could not get user apiKeys' });
       }
-      const apiKeys = user.getApiKeys();
-      getLogger.info({ user: id }, 'User fetched, sending his ApiKeys');
-      return res.status(200).json(apiKeys);
     },
     post: async function registerApiKey(req, res) {
-      const postLogger = controllerLogger.child({ function: 'registerApiKey' });
       const { id } = req.params;
       const { account, apiKey, apiSecret } = req.body;
-      postLogger.info({ user: id }, 'Add apiKey to user');
-      let user = await db.user.getUserById(id);
-      if (!user) {
-        postLogger.info({ user: id }, 'User does not exist');
-        return res.status(404).json({ message: 'User does not exist' });
-      }
-      postLogger.info({ user: id }, 'Checking if apiKey provided is valid');
-      if (account === 'binance') {
-        const result = await binance.checkApiKey({ apiKey, apiSecret });
-        if (!result.valid) {
-          postLogger.info({ user: id }, result.error);
-          return res.status(400).json({ message: result.error });
+      const log = controllerLogger.child({ function: 'registerApiKey', userId: id });
+      try {
+        log.info('Add apiKey to user');
+        const user = await db.user.getUserById(id);
+        if (!user) {
+          log.warn('User does not exist');
+          return res.status(404).json({ message: 'User does not exist' });
         }
-      } else {
-        postLogger.info({ user: id }, 'Platform not supported at the moment');
-        return res.status(400).json({ message: 'Platform not supported at the moment' });
+        log.info('Controling if apiKey is duplicated');
+        const existentKeys = await db.apiKey.getUserApiKeys(user.id);
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key of existentKeys) {
+          // eslint-disable-next-line no-await-in-loop
+          const oldApiKey = await encryptor.decrypt(key.apiKey);
+          if (apiKey === oldApiKey) {
+            log.warn('Duplicated apiKey');
+            return res.status(400).json({ message: 'User has already registered this apiKey' });
+          }
+        }
+        log.info('Checking if apiKey provided is valid');
+        if (account === 'binance') {
+          const result = await binance.checkApiKey({ apiKey, apiSecret });
+          if (!result.valid) {
+            log.warn(result.error);
+            return res.status(400).json({ message: result.error });
+          }
+        } else {
+          log.info('Platform not supported at the moment');
+          return res.status(400).json({ message: 'Platform not supported at the moment' });
+        }
+        log.info('ApiKey valid, encrypting data');
+        const encryptedApiKey = {
+          _id: uuid(),
+          apiKey: await encryptor.encrypt(apiKey),
+          apiSecret: await encryptor.encrypt(apiSecret),
+          userId: user.id,
+          account,
+          status: 'active',
+        };
+        log.info('Saving apiKey in database');
+        await db.apiKey.addUserApiKey(encryptedApiKey);
+        // eslint-disable-next-line no-underscore-dangle
+        const registeredApiKey = await db.apiKey.getApiKeyById(encryptedApiKey._id);
+        log.info('ApiKey successfully saved');
+        return res.status(200).json(registeredApiKey.toJson());
+      } catch (err) {
+        log.error('Could not add apiKey to user');
+        return res.status(500).json(err.message);
       }
-      const encryptedApiKey = {
-        id: uuid(),
-        apiKey: await encryptor.encrypt(apiKey),
-        apiSecret: await encryptor.encrypt(apiSecret),
-        account,
-      };
-      postLogger.info({ user: id }, 'ApiKey valid, saving it in database');
-      user = await user.addApiKeys(encryptedApiKey);
-      return res.status(200).json(user.toJson());
     },
   };
 };

@@ -3,7 +3,9 @@ module.exports = function userController(db, logger, config, jwt, bcrypt, uuid, 
   return {
     post: async function registerUser(req, res) {
       const postLogger = controllerLogger.child({ function: 'registerUser' });
-      const { username, password } = req.body;
+      const {
+        username, password, firstName, surname, birthDate,
+      } = req.body;
       if (!username || !password) {
         postLogger.error('Missing information to create user');
         return res.status(400).json({ message: 'Missing required information' });
@@ -20,6 +22,9 @@ module.exports = function userController(db, logger, config, jwt, bcrypt, uuid, 
           _id: uuid(),
           username,
           password: encryptedPassword,
+          firstName,
+          surname,
+          birthDate,
         });
         postLogger.info({ user: user.id }, 'User succesfully created');
         const token = jwt.sign(

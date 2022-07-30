@@ -1,5 +1,3 @@
-const logger = require('../../logger/logger');
-
 class User {
   constructor(collection, data) {
     this.collection = collection;
@@ -7,82 +5,30 @@ class User {
     // eslint-disable-next-line no-underscore-dangle
     this.id = data._id;
     this.password = data.password;
-    this.apiKey = data.apiKey;
     this.schedule = data.schedule;
     this.active = data.active;
+    this.firstName = data.firstName;
+    this.surname = data.surname;
+    this.birthDate = data.birthDate;
+    this.createdAt = data.createdAt;
   }
 
   getPassword() {
     return this.password;
   }
 
-  getApiKeys() {
-    const apiKeys = [];
-    this.apiKey.forEach((key) => {
-      apiKeys.push({
-        account: key.account,
-        id: key.id,
-      });
-    });
-    return apiKeys;
-  }
-
   async updateSchedule(schedule) {
-    try {
-      await this.collection.findOneAndUpdate(
-        { _id: this.id },
-        {
-          $set:
-            {
-              schedule,
-            },
-        },
-        { returnDocument: 'after' },
-      );
-      this.schedule = schedule;
-    } catch (err) {
-      logger.warn('could not update user schedule');
-    }
-    return this;
-  }
-
-  async addApiKeys(apiKey) {
-    const apiKeys = this.apiKey;
-    apiKeys.push(apiKey);
-    try {
-      await this.collection.findOneAndUpdate(
-        { _id: this.id },
-        {
-          $set:
-            {
-              apiKey: apiKeys,
-            },
-        },
-        { returnDocument: 'after' },
-      );
-      this.apiKey = apiKeys;
-    } catch (err) {
-      logger.warn('could not update user apiKeys');
-    }
-    return this;
-  }
-
-  async removeApiKey(id) {
-    const $pull = {};
-    $pull.apiKey = {};
-    $pull.apiKey.id = id;
-    try {
-      await this.collection.findOneAndUpdate(
-        { _id: this.id },
-        {
-          $pull,
-        },
-        { returnDocument: 'after' },
-      );
-      this.apiKey = this.apiKey.filter((apiKey) => id.includes(apiKey.id));
-    } catch (err) {
-      logger.warn('could not remove user apiKey');
-    }
+    await this.collection.findOneAndUpdate(
+      { _id: this.id },
+      {
+        $set:
+          {
+            schedule,
+          },
+      },
+      { returnDocument: 'after' },
+    );
+    this.schedule = schedule;
     return this;
   }
 
@@ -92,6 +38,10 @@ class User {
       username: this.username,
       schedule: this.schedule,
       active: this.active,
+      firstName: this.firstName,
+      surname: this.surname,
+      createdAt: this.createdAt,
+      birthDate: this.birthDate,
       token: this.token,
     };
   }

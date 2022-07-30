@@ -1,12 +1,13 @@
-module.exports = function loginController(db, logger, bcrypt, config, jwt, redis) {
+module.exports = function loginController(logger, redis) {
   return {
     post: async function logoutUser(req, res) {
+      const log = logger.child({ method: 'logoutUser', user: req.user && req.user.username });
       try {
         await redis.removeUser(req.user.token);
-        logger.info(`request to logout from ${req.user && req.user.username} succesfully processed`);
+        log.info('request to logout succesfully processed');
         res.status(204).json();
       } catch (err) {
-        logger.info(`${req.user && req.user.username} could not log out due to ${err.message} `);
+        log.info(`Could not log out due to ${err.message} `);
         res.status(500).json(err.message);
       }
     },

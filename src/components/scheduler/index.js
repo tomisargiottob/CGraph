@@ -47,47 +47,57 @@ class Scheduler {
     logger.info('Fetching market data');
 
     const market = await this.marketer.getMarketData();
-    const marketId = market.id;
     const marketData = market.data;
+    const marketId = market.id;
     const where = { active: true, 'apiKey.0': { $exists: true } };
     const users = await this.db.user.getAllUsers({ where });
 
-    users.forEach(async (user) => {
+    for (const user of users) {
       let value = 0;
-      const apiKey = await this.encryptor.decrypt(user.apiKey[0].apiKey);
-      const apiSecret = await this.encryptor.decrypt(user.apiKey[0].apiSecret);
+      const userApiKeys = await this.db.apiKeys.getUserApiKeys(user.id);
+      for (const key of userApiKeys) {
+        const apiKey = await this.encryptor.decrypt(key.apiKey);
+        const apiSecret = await this.encryptor.decrypt(key.apiSecret);
 
-      logger.info(`Fetching user ${user.username} wallet information`);
+        logger.info(`Fetching user ${user.username} wallet information`);
+        const account = await this.binance.getWalletStatus({ apiKey, apiSecret });
 
-      const account = await this.binance.getWalletStatus({ apiKey, apiSecret });
-      const wallet = { assets: [], value: 0 };
-      for (const crypto of account.balances) {
-        const assets = Number(crypto.free) + Number(crypto.locked);
-        if (assets > 0) {
-          if (marketData[crypto.asset]) {
-            const individualValue = (assets) * marketData[crypto.asset];
-            wallet.assets.push({ coin: crypto.asset, value: individualValue, ammount: assets });
-            value += individualValue;
-          } else {
-            logger.info(`missing price for ${crypto.asset}`);
-            try {
-              marketData[crypto.asset] = await this.binance.getTickerPrice(
-                crypto.asset,
-                apiKey,
-                apiSecret,
-              );
-              value += (assets) * marketData[crypto.asset];
-              logger.info(`Price found for ${crypto.asset}, adding to memory and user wallet. Price of ${marketData[crypto.asset]}`);
-            } catch (err) {
-              logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
+        if (account) {
+          const wallet = { assets: [], value: 0 };
+          for (const crypto of account.balances) {
+            const assets = Number(crypto.free) + Number(crypto.locked);
+            if (assets > 0) {
+              if (marketData[crypto.asset]) {
+                const individualValue = (assets) * marketData[crypto.asset];
+                wallet.assets.push({ coin: crypto.asset, value: individualValue, ammount: assets });
+                value += individualValue;
+              } else {
+                logger.info(`missing price for ${crypto.asset}`);
+                try {
+                  marketData[crypto.asset] = await this.binance.getTickerPrice(
+                    crypto.asset,
+                    apiKey,
+                    apiSecret,
+                  );
+                  value += (assets) * marketData[crypto.asset];
+                  logger.info(`Price found for ${crypto.asset}, adding to memory and user wallet. Price of ${marketData[crypto.asset]}`);
+                } catch (err) {
+                  logger.warn(`Price not found for ${crypto.asset}, ${err.message}`);
+                }
+              }
             }
           }
+          wallet.value = value;
+          logger.info(`Saving ${user.username} wallet information in database`);
+          await this.db.wallet.addUserRegister(user.id, wallet, initialTime, marketId);
+        } else {
+          logger.error('Could not fetch account information, desactivating apiKey');
+          await key.updateApiKey('inactive');
         }
       }
-      wallet.value = value;
-      await this.db.wallet.addUserRegister(user.id, wallet, initialTime, marketId);
-    });
+    }
     await this.db.market.addMarketData(marketId, marketData, initialTime);
+    logger.info('Information saved, scheduling new market data fetch ');
     schedule.scheduleJob(
       scheduleTime,
       async () => {
