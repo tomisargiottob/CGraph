@@ -1,10 +1,10 @@
 const express = require('express');
 const config = require('config');
+const errors = require('common-errors');
 const cors = require('cors');
 const { initialize } = require('express-openapi');
 const swaggerUi = require('swagger-ui-express');
 const openapiParser = require('swagger-parser');
-const swaggerStats = require('swagger-stats');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { v4: uuid } = require('uuid');
@@ -30,7 +30,7 @@ async function main() {
   const database = new Database(logger);
   const redis = new RedisConnector();
   const deps = await Promise.all([
-    openapiParser.dereference('src/api/openapi.yml'),
+    openapiParser.dereference('src/api/openapi.yaml'),
     database.connect(),
     redis.connect(),
   ]);
@@ -64,19 +64,20 @@ async function main() {
       scheduler,
       binance,
       encryptor,
+      errors,
     },
     promiseMode: true,
     errorMiddleware: errorHandler,
     paths: './src/api/controllers',
   });
 
-  app.use(swaggerStats.getMiddleware({ swaggerSpec: deps[0] })); // metricas en /swagger-stats/stats
   app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(deps[0]));
+  app.get('/api-doc', swaggerUi.setup(deps[0]));
 
   const PORT = config.app.port || 8080;
 
   const server = app.listen(PORT, () => {
-    logger.debug(`Server up and listening on http://localhost:${PORT}`);
+    logger.info(`Server up and listening on http://localhost:${PORT}`);
   });
 
   server.on('error', (err) => {
