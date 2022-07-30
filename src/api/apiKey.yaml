@@ -2,6 +2,8 @@ collection:
   post:
     summary: Add User apiKey Information
     operationId: registerApiKey
+    tags:
+      - ApiKey
     parameters:
       - name: id
         in: path
@@ -46,6 +48,8 @@ collection:
   get:
     summary: Get all User apiKeys
     operationId: getApiKeys
+    tags:
+      - ApiKey
     parameters:
       - name: id
         in: path
@@ -73,6 +77,8 @@ instance:
   delete:
     summary: Remove apiKey from User Information
     operationId: removeApiKey
+    tags:
+      - ApiKey
     parameters:
       - name: id
         in: path
@@ -101,6 +107,8 @@ enable:
   post:
     summary: Enable user apiKey
     operationId: enableApiKey
+    tags:
+      - ApiKey
     parameters:
       - name: id
         in: path
@@ -133,6 +141,8 @@ disable:
   post:
     summary: Disable user apiKey
     operationId: disableApiKey
+    tags:
+      - ApiKey
     parameters:
       - name: id
         in: path

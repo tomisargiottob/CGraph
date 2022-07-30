@@ -2,6 +2,8 @@ login:
   post:
     summary: Login User
     operationId: loginUser
+    tags:
+      - Auth
     requestBody:
       description: Log in a user with credentials
       required: true

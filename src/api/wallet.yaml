@@ -2,6 +2,8 @@ collection:
   get:
     summary: Get User wallet Information
     operationId: getWallet
+    tags:
+      - Wallet
     parameters:
       - name: id
         in: path

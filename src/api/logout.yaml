@@ -2,6 +2,8 @@ logout:
   post:
     summary: Logout User
     operationId: logoutUser
+    tags:
+      - Auth
     responses:
       '204':
         description: User logged out 
