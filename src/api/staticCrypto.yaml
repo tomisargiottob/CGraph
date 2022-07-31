@@ -11,9 +11,6 @@ collection:
           type: string
     requestBody:
       description: 'Add user staticCrypto'
-      required:
-        - asset
-        - amount
       content:
         application/json:
           schema:
@@ -105,7 +102,6 @@ instance:
             properties:
               amount:
                 type: number
-                min: 0
               averagePrice:
                 type: number
     responses:
@@ -135,7 +131,6 @@ components:
           type: string
         amount:
           type: number
-          min: 0
         createdAt: 
           type: number
           readOnly: true

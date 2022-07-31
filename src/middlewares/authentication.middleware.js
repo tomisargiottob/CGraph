@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const logger = require('../components/logger/logger');
 
 function verifySession(redis) {
@@ -15,6 +16,11 @@ function verifySession(redis) {
         if (!user) {
           log.info('Unauthorized request, token has expired or not valid');
           return res.status(401).json({ message: 'User session expired' });
+        }
+        const tokenInfo = jwt.decode(token);
+        if (!req.url.includes(tokenInfo.user_id)) {
+          log.info('Unauthorized request, token has no authorization for this action');
+          return res.status(401).json({ message: 'Permission denied' });
         }
         req.user = JSON.parse(user);
       } catch (err) {

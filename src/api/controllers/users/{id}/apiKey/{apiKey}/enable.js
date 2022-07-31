@@ -1,4 +1,4 @@
-module.exports = function enableUserApiKey(db, logger, binance, encryptor, errors) {
+module.exports = function enableUserApiKey(db, logger, connectorManager, encryptor, errors) {
   return {
     post: async function enableApiKey(req, res) {
       const { id, apiKey } = req.params;
@@ -8,15 +8,15 @@ module.exports = function enableUserApiKey(db, logger, binance, encryptor, error
         if (!user) {
           throw new errors.NotFoundError('User');
         }
-        const key = await db.apiKey.getApiKeyById(apiKey);
+        const key = await db.apiKey.getApiKeyById(apiKey, user.id);
         if (!key) {
           throw new errors.NotFoundError('ApiKey');
         }
         const decryptedApiKey = await encryptor.decrypt(key.apiKey);
         const decryptedApiSecret = await encryptor.decrypt(key.apiSecret);
         if (key.account === 'binance') {
-          const result = await binance.checkApiKey(
-            { apiKey: decryptedApiKey, apiSecret: decryptedApiSecret },
+          const result = await connectorManager.checkApiKey(
+            { apiKey: decryptedApiKey, apiSecret: decryptedApiSecret, account: key.account },
           );
           if (!result.valid) {
             log.info({ user: id }, result.error);

@@ -1,4 +1,4 @@
-module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryptor) {
+module.exports = function userApiKeyCollection(db, logger, uuid, connectorManager, encryptor) {
   const controllerLogger = logger.child({ module: 'userController' });
   return {
     get: async function getApiKeys(req, res) {
@@ -43,7 +43,7 @@ module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryp
         }
         log.info('Checking if apiKey provided is valid');
         if (account === 'binance') {
-          const result = await binance.checkApiKey({ apiKey, apiSecret });
+          const result = await connectorManager.checkApiKey({ apiKey, apiSecret, account });
           if (!result.valid) {
             log.warn(result.error);
             return res.status(400).json({ message: result.error });
@@ -64,7 +64,7 @@ module.exports = function userApiKeyCollection(db, logger, uuid, binance, encryp
         log.info('Saving apiKey in database');
         await db.apiKey.addUserApiKey(encryptedApiKey);
         // eslint-disable-next-line no-underscore-dangle
-        const registeredApiKey = await db.apiKey.getApiKeyById(encryptedApiKey._id);
+        const registeredApiKey = await db.apiKey.getApiKeyById(encryptedApiKey._id, user.id);
         log.info('ApiKey successfully saved');
         return res.status(200).json(registeredApiKey.toJson());
       } catch (err) {

@@ -20,13 +20,13 @@ class Wallet {
     return registersFetched;
   }
 
-  async addUserRegister(id, data, createdAt, marketId) {
+  async addUserRegister(id, data, marketId) {
     await this.collection.insertOne({
       _id: uuid(),
       userId: id,
       wallet: data,
       marketId,
-      createdAt,
+      createdAt: Date.now(),
     });
     return true;
   }

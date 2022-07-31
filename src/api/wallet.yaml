@@ -60,7 +60,7 @@ components:
               properties:
                 coin:
                   type: string
-                ammount:
+                amount:
                   type: number
                 price:
                   type: number

@@ -18,8 +18,8 @@ class ApiKey {
     await this.collection.insertOne(apiKey);
   }
 
-  async getApiKeyById(apiKeyId) {
-    const apiKey = await this.collection.findOne({ _id: apiKeyId });
+  async getApiKey(apiKeyId, userId) {
+    const apiKey = await this.collection.findOne({ _id: apiKeyId, userId });
     return new ApiKeyModel(this.collection, apiKey);
   }
 }

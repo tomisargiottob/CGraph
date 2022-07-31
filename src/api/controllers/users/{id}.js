@@ -23,15 +23,21 @@ module.exports = function userIdController(db, logger, bcrypt) {
       const log = logger.child({ method: 'updateUserData', id });
       let encryptedPassword;
       try {
+        const user = await db.user.getUserById(id);
+        if (!user) {
+          log.warn({ id }, 'User is not registered');
+          return res.status(404).json({ message: 'User does not exist' });
+        }
         if (password) {
           log.info('Encrypting user password');
           encryptedPassword = await bcrypt.hash(password, 10);
         }
         log.info('Updating user information');
-        await db.user.updateUser(id,
+        await user.updateUser(
           {
             password: encryptedPassword,
-          });
+          },
+        );
         log.info('User information successfully updated');
         return res.status(200).json({ message: 'User information updated succesfully' });
       } catch (err) {

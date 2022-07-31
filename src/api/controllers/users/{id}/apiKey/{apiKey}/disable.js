@@ -1,4 +1,4 @@
-module.exports = function disableUserApiKey(db, logger, binance, encryptor, errors) {
+module.exports = function disableUserApiKey(db, logger, errors) {
   return {
     post: async function disableApiKey(req, res) {
       const { id, apiKey } = req.params;
@@ -10,7 +10,7 @@ module.exports = function disableUserApiKey(db, logger, binance, encryptor, erro
           throw new errors.NotFoundError('User');
         }
         log.info('Searching for user apiKey');
-        const key = await db.apiKey.getApiKeyById(apiKey);
+        const key = await db.apiKey.getApiKey(apiKey, user.id);
         if (!key) {
           throw new errors.NotFoundError('ApiKey');
         }
