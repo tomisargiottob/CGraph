@@ -32,6 +32,24 @@ class User {
     return this;
   }
 
+  async updateUser(updateData) {
+    const {
+      password,
+    } = updateData;
+    const user = await this.collection.findOneAndUpdate(
+      { _id: this.id },
+      {
+        $set:
+          {
+            password,
+          },
+      },
+      { returnDocument: 'after' },
+    );
+    this.password = user.password;
+    return this;
+  }
+
   toJson() {
     return {
       id: this.id,

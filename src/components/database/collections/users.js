@@ -36,27 +36,6 @@ class Users {
     await this.collection.insertOne(user);
     return new UserModel(this.collection, user);
   }
-
-  async updateUser(id, updateData) {
-    let {
-      password,
-    } = updateData;
-    if (!password) {
-      password = this.password;
-    }
-    const user = await this.collection.findOneAndUpdate(
-      { _id: id },
-      {
-        $set:
-          {
-            password,
-          },
-      },
-      { returnDocument: 'after' },
-    );
-    this.password = password;
-    return user;
-  }
 }
 
 module.exports = Users;
