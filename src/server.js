@@ -13,7 +13,7 @@ const logger = require('./components/logger/logger').child({ module: 'Main' });
 const Database = require('./components/database/index');
 const RedisConnector = require('./components/redis-sessions/index');
 const { verifySession } = require('./middlewares/authentication.middleware');
-const BinanceClient = require('./components/connectors/binance/index');
+const ConnectorManager = require('./components/connectors/index');
 const Encryptor = require('./components/crypto/index');
 const Marketer = require('./components/marketer/index');
 
@@ -40,13 +40,12 @@ async function main() {
   app.use(cors());
   app.use(verifySession(redis));
   const marketer = new Marketer(logger, database);
-  const binance = new BinanceClient(logger);
   const encryptor = new Encryptor(logger);
+  const connectorManager = new ConnectorManager(logger, database, encryptor);
   const scheduler = new Scheduler({
     database,
     logger,
-    encryptor,
-    binance,
+    connectorManager,
     marketer,
   });
   await scheduler.init();
@@ -62,7 +61,7 @@ async function main() {
       bcrypt,
       uuid,
       scheduler,
-      binance,
+      connectorManager,
       encryptor,
       errors,
     },
