@@ -45,7 +45,11 @@ class BinanceClient {
       const client = new Spot(apiKey, apiSecret);
       const response = await client.account();
       this.logger.info({ function: 'getWalletStatus' }, 'Information succesfully fetched');
-      return response.data;
+      const procesedWallet = response.data?.balances.map((crypto) => {
+        const amount = Number(crypto.free) + Number(crypto.locked);
+        return { amount, asset: crypto.asset };
+      });
+      return procesedWallet;
     } catch (err) {
       this.logger.error({ function: 'getWalletStatus' }, err.message);
       return false;
