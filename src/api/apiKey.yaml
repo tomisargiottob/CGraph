@@ -34,6 +34,10 @@ collection:
               apiSecret:
                 type: string 
                 minLength: 10
+              passphrase:
+                type: string 
+              name:
+                type: string 
     responses:
       '200':
         description: Wallet Found
@@ -190,4 +194,6 @@ components:
             type: string
           createdAt:
             type: number
+          name:
+            type: string
           

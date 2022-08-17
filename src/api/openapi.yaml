@@ -11,6 +11,8 @@ paths:
     $ref: ./login.yaml#/login
   /logout:
     $ref: ./logout.yaml#/logout
+  /availableCryptos:
+    $ref: ./availableCryptos.yaml#/collection
   /users:
     $ref: ./user.yaml#/collection
   /users/{id}:

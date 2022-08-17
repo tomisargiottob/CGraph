@@ -1,0 +1,33 @@
+collection:
+  get:
+    summary: Get cryptos fetched in last market price
+    operationId: getAvailableCryptos
+    tags:
+      - Market
+    parameters:
+      - name: where
+        in: query
+        schema:
+          type: object
+          additionalProperties: false
+          properties:
+            asset:
+              type: string
+    responses:
+      '200':
+        description: Cryptos found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                availableCryptos:
+                  type: array
+                  items: 
+                    type: string
+                count:
+                  type: number
+      '401':
+        $ref: './errors.yaml#/401'
+      '500':
+        $ref: './errors.yaml#/500'
