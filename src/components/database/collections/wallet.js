@@ -1,4 +1,5 @@
 const { v4: uuid } = require('uuid');
+const WalletModel = require('../models/wallet');
 
 class Wallet {
   constructor(db) {
@@ -18,6 +19,20 @@ class Wallet {
     filter.createdAt.$lt = Number(where.createdAt.lt) || today.getTime();
     const registersFetched = await this.collection.find({ userId: id, ...filter }).toArray();
     return registersFetched;
+  }
+
+  async createWallet(userId, marketId) {
+    const id = uuid();
+    await this.collection.insertOne({
+      _id: id,
+      userId,
+      accounts: [],
+      marketId,
+      createdAt: Date.now(),
+      totalValue: 0,
+    });
+    const wallet = await this.collection.findOne({ _id: id });
+    return new WalletModel(this.collection, wallet);
   }
 
   async addUserRegister(id, data, marketId) {
