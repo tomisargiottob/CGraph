@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "node src/server.js | pino-pretty -S",
-    "start": "node src/server.js | pino-pretty -S"
+    "start": "migrate-mongo up && node src/server.js | pino-pretty -S"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,8 @@
     "express": "^4.18.1",
     "express-openapi": "^9.3.0",
     "jsonwebtoken": "^8.5.1",
+    "kucoin-node-api": "^2.1.5",
+    "migrate-mongo": "^9.0.0",
     "mongodb": "4.1.4",
     "node-schedule": "^2.1.0",
     "pino": "^7.11.0",
