@@ -1,5 +1,5 @@
 module.exports = function userApiKeyCollection(db, logger, uuid, connectorManager, encryptor) {
-  const controllerLogger = logger.child({ module: 'userController' });
+  const controllerLogger = logger.child({ module: 'apiKeyController' });
   return {
     get: async function getApiKeys(req, res) {
       const { id } = req.params;
@@ -21,7 +21,13 @@ module.exports = function userApiKeyCollection(db, logger, uuid, connectorManage
     },
     post: async function registerApiKey(req, res) {
       const { id } = req.params;
-      const { account, apiKey, apiSecret } = req.body;
+      const {
+        account,
+        apiKey,
+        apiSecret,
+        passphrase,
+        name,
+      } = req.body;
       const log = controllerLogger.child({ function: 'registerApiKey', userId: id });
       try {
         log.info('Add apiKey to user');
@@ -42,8 +48,13 @@ module.exports = function userApiKeyCollection(db, logger, uuid, connectorManage
           }
         }
         log.info('Checking if apiKey provided is valid');
-        if (account === 'binance') {
-          const result = await connectorManager.checkApiKey({ apiKey, apiSecret, account });
+        if (account === 'binance' || account === 'kucoin') {
+          const result = await connectorManager.checkApiKey({
+            apiKey,
+            apiSecret,
+            passphrase,
+            account,
+          });
           if (!result.valid) {
             log.warn(result.error);
             return res.status(400).json({ message: result.error });
@@ -57,14 +68,16 @@ module.exports = function userApiKeyCollection(db, logger, uuid, connectorManage
           _id: uuid(),
           apiKey: await encryptor.encrypt(apiKey),
           apiSecret: await encryptor.encrypt(apiSecret),
+          passphrase: passphrase ? await encryptor.encrypt(passphrase) : undefined,
           userId: user.id,
           account,
           status: 'active',
+          name,
         };
         log.info('Saving apiKey in database');
         await db.apiKey.addUserApiKey(encryptedApiKey);
         // eslint-disable-next-line no-underscore-dangle
-        const registeredApiKey = await db.apiKey.getApiKeyById(encryptedApiKey._id, user.id);
+        const registeredApiKey = await db.apiKey.getApiKey(encryptedApiKey._id, user.id);
         log.info('ApiKey successfully saved');
         return res.status(200).json(registeredApiKey.toJson());
       } catch (err) {

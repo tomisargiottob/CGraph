@@ -8,12 +8,14 @@ module.exports = function enableUserApiKey(db, logger, connectorManager, encrypt
         if (!user) {
           throw new errors.NotFoundError('User');
         }
-        const key = await db.apiKey.getApiKeyById(apiKey, user.id);
+        const key = await db.apiKey.getApiKey(apiKey, user.id);
         if (!key) {
           throw new errors.NotFoundError('ApiKey');
         }
         const decryptedApiKey = await encryptor.decrypt(key.apiKey);
         const decryptedApiSecret = await encryptor.decrypt(key.apiSecret);
+        console.log(decryptedApiKey);
+        console.log(decryptedApiSecret);
         if (key.account === 'binance') {
           const result = await connectorManager.checkApiKey(
             { apiKey: decryptedApiKey, apiSecret: decryptedApiSecret, account: key.account },

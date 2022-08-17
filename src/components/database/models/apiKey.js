@@ -6,8 +6,10 @@ class ApiKey {
     this.status = data.status;
     this.apiKey = data.apiKey;
     this.apiSecret = data.apiSecret;
+    this.passphrase = data.passphrase;
     this.account = data.account;
     this.createdAt = data.createdAt;
+    this.name = data.name;
   }
 
   async removeApiKey() {
@@ -33,6 +35,7 @@ class ApiKey {
       createdAt: this.createdAt,
       account: this.account,
       status: this.status,
+      name: this.name,
     };
   }
 }

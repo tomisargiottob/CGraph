@@ -7,7 +7,11 @@ module.exports = function userApiKeyInstance(db, logger, errors) {
         if (!user) {
           throw new errors.NotFoundError('User');
         }
-        await user.removeApiKey(apiKey);
+        const userApiKey = await db.apiKey.getApiKey(apiKey, user.id);
+        if (!userApiKey) {
+          throw new errors.NotFoundError('userApiKey');
+        }
+        await userApiKey.removeApiKey();
         logger.info('ApiKey removed succesfully from user');
         return res.status(200).json({ message: 'ApiKey removed succesfully' });
       } catch (err) {

@@ -18,7 +18,7 @@ function verifySession(redis) {
           return res.status(401).json({ message: 'User session expired' });
         }
         const tokenInfo = jwt.decode(token);
-        if (!req.url.includes(tokenInfo.user_id)) {
+        if (!req.url.includes(tokenInfo.user_id) && !req.url.includes('/api/v1/availableCryptos')) {
           log.info('Unauthorized request, token has no authorization for this action');
           return res.status(401).json({ message: 'Permission denied' });
         }
