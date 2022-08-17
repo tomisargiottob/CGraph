@@ -53,16 +53,7 @@ class Scheduler {
     const users = await this.db.user.getAllUsers({ where });
 
     for (const user of users) {
-      const userApiKeys = await this.db.apiKey.getUserApiKeys(user.id, { status: 'active' });
-      if (!userApiKeys.length) {
-        logger.info(`${user.username} has no active apiKeys`);
-      }
-      for (const key of userApiKeys) {
-        logger.info(`Fetching user ${user.username} wallet information of ${key.account}`);
-        await this.connectorManager.saveWalletStatus(market, key, market);
-      }
-      logger.info(`Fetching user ${user.username} static Crypto wallet information`);
-      await this.connectorManager.saveWalletStatus(market, { account: 'static' }, user);
+      await this.connectorManager.calculateUserWallet(user, market);
     }
     await this.db.market.addMarketData(market.id, market.data, initialTime);
     logger.info('Information saved, scheduling new market data fetch ');
