@@ -1,5 +1,5 @@
 class StaticCryptoInterface {
-  constructor(logger, db) {
+  constructor({ logger, db }) {
     this.logger = logger.child({ module: 'StaticCryptoInterface' });
     this.db = db;
   }

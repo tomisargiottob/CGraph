@@ -1,7 +1,7 @@
 const { Spot } = require('@binance/connector');
 
 class BinanceClient {
-  constructor(logger) {
+  constructor({ logger }) {
     this.logger = logger.child({ module: 'binance' });
   }
 
@@ -57,7 +57,8 @@ class BinanceClient {
   }
 
   async getTickerPrice(ticker, apiKey, apiSecret) {
-    const logger = this.logger.child({ function: 'getWalletStatus' });
+    const logger = this.logger.child({ function: 'getTickerPrice', ticker });
+    logger.info('Searching ticker price');
     const client = new Spot(apiKey, apiSecret);
     const response = await client.tickerPrice(`${ticker}USDT`);
     logger.info(`Ticker Information of ${ticker} succesfully fetched`);
