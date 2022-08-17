@@ -1,0 +1,32 @@
+app:
+  port: PORT
+
+mongodb:
+  uri: MONGODB_URI
+  dbName: MONGODB_NAME
+
+redis:
+  endpoint: REDIS_URI
+
+auth:
+  secret: AUTH_SECRET
+  duration: AUTH_TIME
+
+connectorManager:
+  kucoin:
+    environment: live
+
+logger:
+  level: trace
+
+crypto:
+  secretKey: CRYPTO_KEY
+
+coinmarketcap:
+  apiKey: COINMARKETCAP_KEY
+  limit: COINMARKEYCAP_LIMIT
+
+scheduler:
+  time: SCHEDULER_TIME
+  # time: 600000
+  # time: 40000
