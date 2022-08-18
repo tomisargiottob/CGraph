@@ -29,6 +29,7 @@ class Scheduler {
       return;
     }
     const nextMarketTime = lastMarket.createdAt - Date.now() + config.scheduler.time;
+    logger.info('Next market time', nextMarketTime, config.scheduler.time);
     if (nextMarketTime > 0) {
       logger.info(`Data has been fetched in the past hours, scheduling next request in ${nextMarketTime / (1000 * 60 * 60)} hours`);
       schedule.scheduleJob(
@@ -52,8 +53,6 @@ class Scheduler {
     logger.info('Fetching market data');
 
     const market = await this.marketer.getMarketData();
-    // const market = await this.db.market.getLastMarket();
-    // market.data = market.prices;
     const where = { active: true };
     const users = await this.db.user.getAllUsers({ where });
 
