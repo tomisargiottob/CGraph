@@ -6,7 +6,7 @@ mongodb:
   dbName: MONGODB_NAME
 
 redis:
-  endpoint: REDIS_URI
+  endpoint: REDIS_URL
 
 auth:
   secret: AUTH_SECRET
