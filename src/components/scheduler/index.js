@@ -28,12 +28,12 @@ class Scheduler {
       await this.programMarketData();
       return;
     }
-    const nextMarketTime = lastMarket.createdAt - Date.now() + config.scheduler.time;
-    logger.info('Next market time', nextMarketTime, config.scheduler.time);
+    const nextMarketTime = lastMarket.createdAt - Date.now() + Number(config.scheduler.time);
+    logger.info(`Next market time ${nextMarketTime}`);
     if (nextMarketTime > 0) {
       logger.info(`Data has been fetched in the past hours, scheduling next request in ${nextMarketTime / (1000 * 60 * 60)} hours`);
       schedule.scheduleJob(
-        new Date(Date.now() + config.scheduler.time),
+        new Date(Date.now() + Number(config.scheduler.time)),
         async () => {
           logger.info('Excecuting scheduled request to fetch market data');
           await this.programMarketData();
@@ -47,7 +47,7 @@ class Scheduler {
 
   async programMarketData() {
     const initialTime = Date.now();
-    const scheduleTime = initialTime + config.scheduler.time;
+    const scheduleTime = initialTime + Number(config.scheduler.time);
     const logger = this.logger.child({ function: 'programMarketData' });
 
     logger.info('Fetching market data');
