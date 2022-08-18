@@ -14,7 +14,7 @@ auth:
 
 connectorManager:
   kucoin:
-    environment: live
+    environment: KUCOIN_ENV
 
 logger:
   level: trace

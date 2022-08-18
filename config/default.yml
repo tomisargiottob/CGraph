@@ -1,9 +1,13 @@
 app:
-  port: 3000
+  port: PORT
 
 mongodb:
-  uri: <uri>
-  dbName: <dbName>
+  uri: MONGODB_URI
+  dbName: MONGODB_NAME
+
+connectorManager:
+  kucoin:
+    environment: live
 
 redis:
   endpoint: <uri>
