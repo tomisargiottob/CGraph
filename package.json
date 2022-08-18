@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "node src/server.js | pino-pretty -S",
-    "start": "migrate-mongo up && node src/server.js | pino-pretty -S"
+    "start": "migrate-mongo up && node src/server.js"
   },
   "repository": {
     "type": "git",

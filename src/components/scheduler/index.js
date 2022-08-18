@@ -23,6 +23,11 @@ class Scheduler {
     const logger = this.logger.child({ function: 'init' });
     logger.info('Scheduling requests for all users');
     const lastMarket = await this.db.market.getLastMarket();
+    if (!lastMarket) {
+      logger.info('No market information found in database, fetching market data');
+      await this.programMarketData();
+      return;
+    }
     const nextMarketTime = lastMarket.createdAt - Date.now() + config.scheduler.time;
     if (nextMarketTime > 0) {
       logger.info(`Data has been fetched in the past hours, scheduling next request in ${nextMarketTime / (1000 * 60 * 60)} hours`);
