@@ -8,7 +8,7 @@ class Market {
 
   async getLastMarket() {
     const market = await this.collection.find().sort({ createdAt: -1 }).limit(1).toArray();
-    if (!market) {
+    if (!market.length) {
       return false;
     }
     const lastMarket = new MarketModel(this.collection, market[0]);
