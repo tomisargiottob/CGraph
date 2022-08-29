@@ -14,11 +14,10 @@ module.exports = function enableUserApiKey(db, logger, connectorManager, encrypt
         }
         const decryptedApiKey = await encryptor.decrypt(key.apiKey);
         const decryptedApiSecret = await encryptor.decrypt(key.apiSecret);
-        console.log(decryptedApiKey);
-        console.log(decryptedApiSecret);
-        if (key.account === 'binance') {
+        const decryptedPassphrase = await encryptor.decrypt(key.passphrase);
+        if (key.account === 'binance' || key.account === 'kucoin') {
           const result = await connectorManager.checkApiKey(
-            { apiKey: decryptedApiKey, apiSecret: decryptedApiSecret, account: key.account },
+            { apiKey: decryptedApiKey, apiSecret: decryptedApiSecret, passphrase: decryptedPassphrase, account: key.account },
           );
           if (!result.valid) {
             log.info({ user: id }, result.error);
